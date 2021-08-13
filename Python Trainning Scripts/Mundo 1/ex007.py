@@ -1,4 +1,4 @@
-nome = str(input('Olá Professor. Favor digitar o nome do aluno: '))
+nome = str(input('Olá Professor! Favor digitar o nome do aluno: '))
 nprov = int(input('Agora o número de provas realizadas: '))
 nota = 0
 cont = 1

@@ -1,2 +1,2 @@
 n = float(input('Olá! Favor digitar um valor que represente uma medida em metros: '))
-print('Esta medida de {} metros equivale a: \n - {:.1f} cm (centrimetros) \n - {:.1f} mm (milimetros)'.format(n, n*100, n*1000))
+print('Esta medida de {} metros equivale a: \n - {:.2f} cm (centrimetros) \n - {:.2f} mm (milimetros)'.format(n, n*100, n*1000))

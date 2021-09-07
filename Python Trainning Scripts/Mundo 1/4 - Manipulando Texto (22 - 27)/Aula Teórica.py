@@ -5,6 +5,7 @@ print(frase[9:21:2]) #string da 9ª à 21ª posição contando de 2 em 2 caracte
 print(frase[:5]) # é = frase[0:5]
 print(frase[15:]) # é = frase da 15ª até o final
 print(frase[9::3]) #mesma lógica das anteriores
+print(frase[::-1]) #frase ao contrário
 
 #Análise
 print(len(frase)) # número de strings

@@ -1,6 +1,4 @@
-maisdezoito = 0
-homens = 0
-mulheresmenos20 = 0
+maisdezoito = homens = mulheresmenos20 = 0
 
 while True:
     print('{}-{}'.format('\033[1m', '\033[m') * 40)
@@ -14,7 +12,7 @@ while True:
         sexo = str(input('Sexo [M/F]: ')).strip().upper()
     while resp not in 'SN':
         resp = str(input('Quer continuar? [S/N] ')).strip().upper()
-    if idade > 18:
+    if idade >= 18:
         maisdezoito += 1
     if sexo == 'M':
         homens += 1

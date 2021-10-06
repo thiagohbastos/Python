@@ -2,22 +2,17 @@ tabela = 'Atlético Mg',	'Palmeiras', 'Fortaleza', 'Flamengo', 'Bragantino', 'Co
          'Athletico Pr', 'Cuiabá', 'Ceará',	'Atlético Go', 'São Paulo',	'Juventude', 'América-MG', 'Santos', 'Bahia',\
          'Grêmio', 'Sport', 'Chapecoense'
 print('Os cinco primeiros colocados: ')
-for melhores in range(0, 5):
-    print(f'\033[1:32m{melhores + 1}º\033[m - {tabela[melhores]}')
+print(f'\033[1:32m{tabela[0:6]}\033[m\n')
 
 print('Os quatro na zona de rebaixamento: ')
-for piores in range(-4, 0, 1):
-       print(f'\033[1:31m{tabela.index(tabela[piores]) + 1}º\033[m - {tabela[piores]}')
+print(f'\033[1:31m{tabela[-4:]}\033[m\n')
 
 print('Todos os times em órdem alfabética: ')
-for cont in range (0, len(tabela), 1):
-    if cont != 19:
-        print(sorted(tabela)[cont], end=', ')
-    else:
-        print(sorted(tabela)[cont], end='.\n\n')
+print(sorted(tabela), end='.\n\n')
+
 print('-'*80)
 while True:
-    time = str(input('Favor digitar um outro time para saber sua posição (favor usar acentuação): ')).strip().title()
+    time = str(input('Favor digitar um outro time para saber sua posição (favor digitar como demonstrado acima): ')).strip().title()
     print('-' * 80)
     if tabela.count(time) != 0:
         print(f'O {time} está atualmente na {tabela.index(time) + 1}ª posição!')

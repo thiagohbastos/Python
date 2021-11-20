@@ -19,4 +19,3 @@ usuario = str(input('Favor digitar o usuário: '))
 senha = str(input('Agora a senha: '))
 
 login_wit(navegador, usuario, senha)
-# '1002062870620' 'Ts@1thigotsb'

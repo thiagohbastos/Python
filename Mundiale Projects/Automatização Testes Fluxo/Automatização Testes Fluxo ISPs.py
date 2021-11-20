@@ -34,7 +34,7 @@ def abrir_chat():
 
 
 def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem):
-    WebDriverWait(navegador, 0.2).until(
+    WebDriverWait(navegador, 20).until(
         expected_conditions.presence_of_element_located((By.XPATH, elemento_procurado)))
     sleep(1)
     navegador.find_element(By.ID, id_html_mensagem).send_keys(mensagem, Keys.ENTER)
@@ -48,10 +48,10 @@ def interacao_chat():
                        'msg-textarea', 'Não')
 
         esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[4]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', '30664700')
+                       'msg-textarea', '99010220')
 
         esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[6]/div[2]/div[1]/div/div/div/div/div[1]/div',
-                       'msg-textarea', '53')
+                       'msg-textarea', '36')
 
         esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[8]/div[2]/div[1]/div/div/div/div/div[1]/div[1]',
                        'msg-textarea', 'sim')

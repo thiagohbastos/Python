@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from time import sleep
 
-navegador = webdriver.Chrome("chromedriver")
+navegador = webdriver.Chrome(r"C:\Users\thiago.bastos\Downloads\chromedriver_win32\chromedriver.exe")
 
 def cidade():
     try:

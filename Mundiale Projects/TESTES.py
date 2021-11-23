@@ -1,10 +1,12 @@
+import pandas as pd
+import numpy as np
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from time import time, sleep
-from pprint import pprint
+import datetime
 
 navegador = webdriver.Chrome()
 
@@ -43,11 +45,11 @@ def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem, tempo_espera)
         sleep(1)
         navegador.find_element(By.ID, id_html_mensagem).send_keys(mensagem, Keys.ENTER)
 
-        final_process = time() - start
-        return final_process
+        tempo_processo = time() - start
+        return tempo_processo
 
     except Exception as erro:
-        return f"Não OK, erro {erro.__class__}"
+        return f"Reposta não encontrada em {tempo_espera}s."
 
 
 def interacao_chat():
@@ -57,19 +59,20 @@ def interacao_chat():
         tempos = list()
 
         tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', 'Não', 20))
+                       'msg-textarea', 'Não', 10))
 
         tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[4]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', '99010220', 20))
+                       'msg-textarea', '99010220', 10))
 
         tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[6]/div[2]/div[1]/div/div/div/div/div[1]/div',
-                       'msg-textarea', '36', 20))
+                       'msg-textarea', '36', 10))
 
         tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[8]/div[2]/div[1]/div/div/div/div/div[1]/div[1]',
-                       'msg-textarea', 'sim', 20))
+                       'msg-textarea', 'sim', 10))
 
         tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[10]/div[2]/div[1]/div/div/div/div/div[1]/div',
                        'msg-textarea', 'Favor encerrar como teste. Tenha um ótimo trabalho! :)', 90))
+        print(tempos)
         return tempos[:]
     except:
         return 'Erro não identificado'
@@ -103,6 +106,7 @@ sites = [['https://ofertasblinktelecom.com.br/',
           'http://ofertasinfovaletelecom.com.br/',
           'https://ofertascopeltelecom.com.br/']]
 
+
 while True:
     print('''Realizar testes para qual Squad?
 0 - Todos os Squads das ISPs
@@ -115,8 +119,7 @@ while True:
         break
     print('\033[1:31mOpção inválida!\033[m')
 
-resultado = list()
-auxiliar = dict()
+resultado = dict()
 
 if resp == 0:
     for i, squad in enumerate(sites):
@@ -128,9 +131,7 @@ if resp == 0:
                 navegador.get(lp)
             cidade()
             abrir_chat()
-            auxiliar[lp] = interacao_chat()
-            resultado.append(auxiliar.copy())
-            auxiliar.clear()
+            resultado[lp] = interacao_chat()
 
 else:
     resp -= 1
@@ -142,9 +143,7 @@ else:
             navegador.get(lp)
         cidade()
         abrir_chat()
-        auxiliar[lp] = interacao_chat()
-        resultado.append(auxiliar.copy())
-        auxiliar.clear()
+        resultado[lp] = interacao_chat()
 
-pprint(resultado)
-print(resultado)
+df = pd.DataFrame(data=resultado)
+df.to_excel(f'Teste de Fluxo - {resp}.xlsx', sheet_name=f'{datetime.date.today()}')

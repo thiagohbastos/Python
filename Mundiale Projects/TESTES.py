@@ -3,9 +3,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from time import sleep
+from time import time, sleep
+from pprint import pprint
 
-navegador = webdriver.Chrome(r"C:\Users\thiago.bastos\Downloads\chromedriver_win32\chromedriver.exe")
+navegador = webdriver.Chrome()
 
 def cidade():
     try:
@@ -33,34 +34,45 @@ def abrir_chat():
     navegador.execute_script('document.querySelector("#dots-chat-cta > img").click()')  # clica no ícone webchat
 
 
-def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem):
-    WebDriverWait(navegador, 20).until(
-        expected_conditions.presence_of_element_located((By.XPATH, elemento_procurado)))
-    sleep(1)
-    navegador.find_element(By.ID, id_html_mensagem).send_keys(mensagem, Keys.ENTER)
+def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem, tempo_espera):
+    try:
+        start = time()
+
+        WebDriverWait(navegador, tempo_espera).until(
+            expected_conditions.presence_of_element_located((By.XPATH, elemento_procurado)))
+        sleep(1)
+        navegador.find_element(By.ID, id_html_mensagem).send_keys(mensagem, Keys.ENTER)
+
+        final_process = time() - start
+        return final_process
+
+    except Exception as erro:
+        return f"Não OK, erro {erro.__class__}"
 
 
 def interacao_chat():
     try:
         navegador.switch_to.frame(navegador.find_element(By.ID, 'blip-chat-iframe'))
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', 'Não')
+        tempos = list()
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[4]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', '99010220')
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/div',
+                       'msg-textarea', 'Não', 20))
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[6]/div[2]/div[1]/div/div/div/div/div[1]/div',
-                       'msg-textarea', '36')
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[4]/div[2]/div[2]/div/div/div/div/div[1]/div',
+                       'msg-textarea', '99010220', 20))
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[8]/div[2]/div[1]/div/div/div/div/div[1]/div[1]',
-                       'msg-textarea', 'sim')
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[6]/div[2]/div[1]/div/div/div/div/div[1]/div',
+                       'msg-textarea', '36', 20))
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[10]/div[2]/div[1]/div/div/div/div/div[1]/div',
-                       'msg-textarea', 'Favor encerrar como teste. Tenha um ótimo trabalho! :)')
-        return "OK"
-    except Exception as erro:
-        return f"Não OK, erro {erro.__class__}"
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[8]/div[2]/div[1]/div/div/div/div/div[1]/div[1]',
+                       'msg-textarea', 'sim', 20))
+
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[10]/div[2]/div[1]/div/div/div/div/div[1]/div',
+                       'msg-textarea', 'Favor encerrar como teste. Tenha um ótimo trabalho! :)', 90))
+        return tempos[:]
+    except:
+        return 'Erro não identificado'
 
 
 # LISTA com LPs
@@ -99,9 +111,12 @@ while True:
 3 - BURN-e
 4 - M-O''')
     resp = int(input('Opção: '))
-    if resp in range (0, 4):
+    if resp in range (0, 5):
         break
     print('\033[1:31mOpção inválida!\033[m')
+
+resultado = list()
+auxiliar = dict()
 
 if resp == 0:
     for i, squad in enumerate(sites):
@@ -112,8 +127,10 @@ if resp == 0:
                 navegador.switch_to.new_window('tab')
                 navegador.get(lp)
             cidade()
-            #abrir_chat()
-            #print(interacao_chat())
+            abrir_chat()
+            auxiliar[lp] = interacao_chat()
+            resultado.append(auxiliar.copy())
+            auxiliar.clear()
 
 else:
     resp -= 1
@@ -124,5 +141,10 @@ else:
             navegador.switch_to.new_window('tab')
             navegador.get(lp)
         cidade()
-        #abrir_chat()
-        #print(interacao_chat())
+        abrir_chat()
+        auxiliar[lp] = interacao_chat()
+        resultado.append(auxiliar.copy())
+        auxiliar.clear()
+
+pprint(resultado)
+print(resultado)

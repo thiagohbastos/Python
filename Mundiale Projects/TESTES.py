@@ -152,5 +152,5 @@ else:
         abrir_chat()
         resultado[k2] = interacao_chat()
 
-df = pd.DataFrame(data=resultado, index=['CHAT', 'Já sou cliente', 'CEP', 'Nº', 'Confirmação', 'Transbordo'])
+df = pd.DataFrame(data=resultado, index=['Abrir CHAT', 'Já sou cliente', 'CEP', 'Nº', 'Confirmação', 'Transbordo'])
 df.to_excel(f'Teste de Fluxo - {resp}.xlsx', sheet_name=f'{datetime.date.today()}')

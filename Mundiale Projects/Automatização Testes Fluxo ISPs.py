@@ -1,11 +1,13 @@
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from time import sleep
+from time import time, sleep
+import datetime
 
-navegador = webdriver.Chrome(r"C:\Users\thiago.bastos\Downloads\chromedriver_win32\chromedriver.exe")
+navegador = webdriver.Chrome()
 
 def cidade():
     try:
@@ -33,34 +35,46 @@ def abrir_chat():
     navegador.execute_script('document.querySelector("#dots-chat-cta > img").click()')  # clica no ícone webchat
 
 
-def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem):
-    WebDriverWait(navegador, 20).until(
-        expected_conditions.presence_of_element_located((By.XPATH, elemento_procurado)))
-    sleep(1)
-    navegador.find_element(By.ID, id_html_mensagem).send_keys(mensagem, Keys.ENTER)
+def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem, tempo_espera):
+    try:
+        start = time()
+
+        WebDriverWait(navegador, tempo_espera).until(
+            expected_conditions.presence_of_element_located((By.XPATH, elemento_procurado)))
+        sleep(1)
+        navegador.find_element(By.ID, id_html_mensagem).send_keys(mensagem, Keys.ENTER)
+
+        tempo_processo = time() - start
+        return tempo_processo
+
+    except Exception as erro:
+        return f"Reposta não encontrada em {tempo_espera}s."
 
 
 def interacao_chat():
     try:
         navegador.switch_to.frame(navegador.find_element(By.ID, 'blip-chat-iframe'))
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', 'Não')
+        tempos = list()
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[4]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', '99010220')
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/div',
+                       'msg-textarea', 'Não', 10))
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[6]/div[2]/div[1]/div/div/div/div/div[1]/div',
-                       'msg-textarea', '36')
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[4]/div[2]/div[2]/div/div/div/div/div[1]/div',
+                       'msg-textarea', '99010220', 10))
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[8]/div[2]/div[1]/div/div/div/div/div[1]/div[1]',
-                       'msg-textarea', 'sim')
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[6]/div[2]/div[1]/div/div/div/div/div[1]/div',
+                       'msg-textarea', '36', 10))
 
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[10]/div[2]/div[1]/div/div/div/div/div[1]/div',
-                       'msg-textarea', 'Favor encerrar como teste. Tenha um ótimo trabalho! :)')
-        return "OK"
-    except Exception as erro:
-        return f"Não OK, erro {erro.__class__}"
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[8]/div[2]/div[1]/div/div/div/div/div[1]/div[1]',
+                       'msg-textarea', 'sim', 10))
+
+        tempos.append(esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[10]/div[2]/div[1]/div/div/div/div/div[1]/div',
+                       'msg-textarea', 'Favor encerrar como teste. Tenha um ótimo trabalho! :)', 90))
+        print(tempos)
+        return tempos[:]
+    except:
+        return 'Erro não identificado'
 
 
 # LISTA com LPs
@@ -91,6 +105,7 @@ sites = [['https://ofertasblinktelecom.com.br/',
           'http://ofertasinfovaletelecom.com.br/',
           'https://ofertascopeltelecom.com.br/']]
 
+
 while True:
     print('''Realizar testes para qual Squad?
 0 - Todos os Squads das ISPs
@@ -99,9 +114,11 @@ while True:
 3 - BURN-e
 4 - M-O''')
     resp = int(input('Opção: '))
-    if resp in range (0, 4):
+    if resp in range (0, 5):
         break
     print('\033[1:31mOpção inválida!\033[m')
+
+resultado = dict()
 
 if resp == 0:
     for i, squad in enumerate(sites):
@@ -112,8 +129,8 @@ if resp == 0:
                 navegador.switch_to.new_window('tab')
                 navegador.get(lp)
             cidade()
-            #abrir_chat()
-            #print(interacao_chat())
+            abrir_chat()
+            resultado[lp] = interacao_chat()
 
 else:
     resp -= 1
@@ -124,5 +141,8 @@ else:
             navegador.switch_to.new_window('tab')
             navegador.get(lp)
         cidade()
-        #abrir_chat()
-        #print(interacao_chat())
+        abrir_chat()
+        resultado[lp] = interacao_chat()
+
+df = pd.DataFrame(data=resultado)
+df.to_excel(f'Teste de Fluxo - {resp}.xlsx', sheet_name=f'{datetime.date.today()}')

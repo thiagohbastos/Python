@@ -50,7 +50,7 @@ def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem, tempo_espera)
         tempo_processo = float(f'{(time() - start):.2f}')
 
     except Exception as erro:
-        return f"ERRO esperar_enviar - {erro.__class__}."
+        return f"{erro.__class__} - Tempo superior a {tempo_espera}s na etapa."
     else:
         return tempo_processo
 
@@ -102,8 +102,7 @@ sites = {'EVA':{'BLINK':'https://ofertasblinktelecom.com.br/',
           'WECLIX':'http://ofertasweclix.com.br',
           'CABONNET':'https://ofertascabonnet.com.br/',
           'SERCOMTEL':'http://ofertasercomtel.com.br/',
-          'PROXXIMA':'https://ofertastoolsnet.com.br/'
-                  },
+          'PROXXIMA':'https://ofertastoolsnet.com.br/'},
 
          'M-O':{'VALENET':'https://ofertasvalenet.com.br/',
           'INFOVALE':'http://ofertasinfovaletelecom.com.br/',

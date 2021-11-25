@@ -79,7 +79,7 @@ def interacao_chat(CEP, NUMERO):
 
     tempos.append(esperar_enviar(
         '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[8]/div[2]/div[1]/div/div/div/div/div[1]/div[1]',
-        'msg-textarea', 'sim', 1))
+        'msg-textarea', 'sim', 10))
 
     tempos.append(esperar_enviar(
         '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[10]/div[2]/div[2]/div/div/div/div/div[1]/div',

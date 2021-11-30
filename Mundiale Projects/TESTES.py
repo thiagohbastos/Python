@@ -90,12 +90,12 @@ def interacao_chat(CEP, NUMERO):
 navegador = webdriver.Chrome()
 
 # LISTA com LPs
-sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', 99010220, 36],
-                 'BRISANET': ['https://ofertasbrisanet.com.br', 99010220, 36],
-                 'TELY': ['https://ofertastely.com.br/', 99010220, 36],
-                 'LIGUE': ['https://ofertasligue.net/', 99010220, 36],
-                 'SUMICITY': ['https://ofertassumicity.com.br/', 99010220, 36],
-                 'VIP': ['https://ofertasvipbrtelecom.com.br/', 99010220, 36]
+sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', 31235060, 148],
+                 'BRISANET': ['https://ofertasbrisanet.com.br', 55012640, 13],
+                 'TELY': ['https://ofertastely.com.br/', 58038000, 315],
+                 'LIGUE': ['https://ofertasligue.net/', 87005002, 405],
+                 'SUMICITY': ['https://ofertassumicity.com.br/', 27534240, 382],
+                 'VIP': ['https://ofertasvipbrtelecom.com.br/', 09415110, 16]
                  },
 
          'WALL-E': {'TVN': ['https://ofertastvn.com.br', 99010220, 36],

@@ -40,83 +40,36 @@ def abrir_snippet(navegador):
         return 'Snippet Não OK'
 
 
-def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem, tempo_espera, navegador):
-    start = time()
-
-    try:
-        WebDriverWait(navegador, tempo_espera).until(
-            expected_conditions.presence_of_element_located((By.XPATH, elemento_procurado)))
-        sleep(1)
-        navegador.find_element(By.ID, id_html_mensagem).send_keys(mensagem, Keys.ENTER)
-        tempo_processo = float(f'{(time() - start):.2f}')
-
-    except Exception as erro:
-        return f"Não OK (superior a {tempo_espera}s)"
-    else:
-        return tempo_processo
-
-
-def interacao_chat(CEP, NUMERO, navegador):
-    global auxiliar
-    auxiliar = list()
-    try:
-        navegador.switch_to.frame(navegador.find_element(By.ID, 'blip-chat-iframe'))
-    except Exception as erro:
-        auxiliar.append(f'Não OK - {erro.__class__}')
-    else:
-        auxiliar.append('OK')
-
-    auxiliar.append(
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', 'Não', 10, navegador))
-
-    auxiliar.append(
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[4]/div[2]/div[2]/div/div/div/div/div[1]/div',
-                       'msg-textarea', CEP, 10, navegador))
-
-    auxiliar.append(
-        esperar_enviar('//*[@id="messages-list"]/div[1]/div/div/div[2]/div[6]/div[2]/div[1]/div/div/div/div/div[1]/div',
-                       'msg-textarea', NUMERO, 10, navegador))
-
-    auxiliar.append(esperar_enviar(
-        '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[8]/div[2]/div[1]/div/div/div/div/div[1]/div[1]',
-        'msg-textarea', 'sim', 10, navegador))
-
-    auxiliar.append(esperar_enviar(
-        '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[10]/div[2]/div[2]/div/div/div/div/div[1]/div',
-        'msg-textarea', 'Favor encerrar como teste. Tenha um ótimo trabalho! 😁', 30, navegador))
-    return auxiliar[:]
-
-
 # Defs Novas:
 def url_lps():
-    sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', 31235060, 148],
-                     'BRISANET': ['https://ofertasbrisanet.com.br', 55012640, 13],
-                     'TELY': ['https://ofertastely.com.br/', 58038000, 315],
-                     'LIGUE': ['https://ofertasligue.net/', 87005002, 405],
-                     'SUMICITY': ['https://ofertassumicity.com.br/', 27534240, 382],
-                     'VIP': ['https://ofertasvipbrtelecom.com.br/', '09415110', 16]
+    sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
+                     'BRISANET': ['https://ofertasbrisanet.com.br', '59607571', '241'],
+                     'TELY': ['https://ofertastely.com.br/', '58038000', '315'],
+                     'LIGUE': ['https://ofertasligue.net/', '87005002', '405'],
+                     'SUMICITY': ['https://ofertassumicity.com.br/', '27534240', '382'],
+                     'VIP': ['https://ofertasvipbrtelecom.com.br/', '09415110', '16']
                      },
 
-             'WALL-E': {'TVN': ['https://ofertastvn.com.br', 99010220, 36],
-                        'COPREL': ['http://ofertascoprel.com.br/', 99010220, 36],
-                        'NOVA FIBRA': ['https://ofertasnova.com.br', 99010220, 36],
-                        'DESKTOP': ['https://ofertasdesktop.com.br', 99010220, 36],
-                        'MASTER': ['https://ofertassoumaster.com.br/', 99010220, 36],
-                        'AZZA': ['https://ofertasazza.net.br/', 99010220, 36],
-                        'FLEETNET': ['https://ofertasfleetnet.com.br/', 99010220, 36],
-                        'SOCITEL': ['https://mkt.azza.net.br/socitel', 99010220, 36]},
+             'WALL-E': {'TVN': ['https://ofertastvn.com.br', '65130000', '325'],
+                        'COPREL': ['http://ofertascoprel.com.br/', '98280000', '175'],
+                        'DESKTOP': ['https://ofertasdesktop.com.br', '11712020', '315'],
+                        'MASTER': ['https://ofertassoumaster.com.br/', '38616072', '22'],
+                        'AZZA': ['https://ofertasazza.net.br/', '18071724', '65'],
+                        'FLEETNET': ['https://ofertasfleetnet.com.br/', '19026410', '885'],
+                        'SOCITEL': ['https://mkt.azza.net.br/socitel', '06770300', '350']},
 
-             'BURN-E': {'MOB': ['http://ofertasmobtelecom.com.br/', 99010220, 36],
-                        'WECLIX': ['http://ofertasweclix.com.br', 99010220, 36],
-                        'CABONNET': ['https://ofertascabonnet.com.br/', 99010220, 36],
-                        'SERCOMTEL': ['http://ofertasercomtel.com.br/', 99010220, 36],
-                        'PROXXIMA': ['https://ofertastoolsnet.com.br/', 99010220, 36]},
+             'BURN-E': {'MOB': ['http://ofertasmobtelecom.com.br/', '60525200', '150'],
+                        'WECLIX': ['http://ofertasweclix.com.br', '14807049', '60'],
+                        'CABONNET': ['https://ofertascabonnet.com.br/', '19042410', '347'],
+                        'SERCOMTEL': ['http://ofertasercomtel.com.br/', '86055630', '995'],
+                        'PROXXIMA': ['https://ofertastoolsnet.com.br/', '59575000', '07']},
 
-             'M-O': {'VALENET': ['https://ofertasvalenet.com.br/', 99010220, 36],
-                     'INFOVALE': ['http://ofertasinfovaletelecom.com.br/', 99010220, 36],
-                     'COPEL': ['https://ofertascopeltelecom.com.br/', 99010220, 36],
-                     'ALGAR': ['https://ofertasalgartelecom.com.br/', 99010220, 36]}}
+             'M-O': {'VALENET': ['https://ofertasvalenet.com.br/', '31930560', '120'],
+                     'INFOVALE': ['http://ofertasinfovaletelecom.com.br/', '11925000', '710'],
+                     'COPEL': ['https://ofertascopeltelecom.com.br/', '87013937', '2946'],
+                     'ALGAR': ['https://ofertasalgartelecom.com.br/', '38407261', '295'],
+                     'MHNET': ['https://ofertasmhnet.com.br/', '84032602', '34']
+                     }}
     return sites.copy()
 
 
@@ -145,20 +98,24 @@ def mapeamento_steps(cep, numero):
                       'Telefone': ['número preferível', '31955555555'],
                       'Telefone 2': ['número adicional', '31966666666'],
                       'E-mail': ['e-mail para o cadastro', 'nulonulo@gmail.com'],
+                      'Promoção': ['outra operadora de internet', 'Não'],
                       'Pagamento': ['pagamento por boleto digital ou por débito em conta', 'Boleto Digital'],
                       'Pagamento2': ['Qual o melhor método de pagamento pra você?', 'Boleto Online'],
                       'Turno Inst.': ['o turno ideal para a instalação', 'Tarde'],
                       'Confirma Pedido': ['Preciso que você confirme as seguintes informações', 'Não Confirmo'],
                       'Confirma Pedido2': ['Você confirma as informações acima?', 'Não Confirmo'],
                       'Motivo não confirmação': ['Você não confirmou por qual motivo?', 'Falar com humano'],
-                      'Transbordo ATH': ['Vou te transferir para um consultor especializado',
-                                         'Favor finalizar como teste. Tenha um ótimo trabalho! 😁']
+                      'Transbordo ATH': ['um consultor especializado',
+                                         'Favor finalizar como teste. Tenha um ótimo trabalho!'],
+                      'Transbordo ATH2': ['Vou te transferir para',
+                                         'Favor finalizar como teste. Tenha um ótimo trabalho!']
                       }
     return palavras_chave.copy()
 
 
 def encontra_chave_step(navegador, cep, numero):
     steps_local = mapeamento_steps(cep, numero)
+
     while True:
         n_bloco_atual = len(navegador.find_elements(By.XPATH, '//*[@id="messages-list"]/div[1]/div/div/div[2]/div'))
         if n_bloco_atual % 2 == 0 and n_bloco_atual > 0:
@@ -170,17 +127,60 @@ def encontra_chave_step(navegador, cep, numero):
                 break
             else:
                 continue
-    n_ultima_msg = len(navegador.find_elements(By.XPATH,
-                                               f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]/div[2]/div'))
+        else:
+            sleep(0.5)
+    n_ultima_msg = len(navegador.find_elements(
+        By.XPATH,f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]/div[2]/div'))
     try:
         for cont in range(1, n_ultima_msg + 1):
-            mensagem = navegador.find_element(By.XPATH,
-                                              f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]/div[2]/div[{cont}]/div/div/div/div/div[1]/div[1]').text
-
+            mensagem = str(navegador.find_element(
+                By.XPATH,f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]'
+                         f'/div[2]/div[{cont}]/div/div/div/div/div[1]/div[1]').text)
             for key, valor in steps_local.items():
-                if valor[0] in mensagem:
+                if valor[0].upper() in mensagem.upper():
                     return key
     except:
         return '1'
     else:
         return '1'
+
+
+def interacao_chat(navegador, CEP, num):
+    steps = mapeamento_steps(CEP, num)
+    lista_aux_chat = []
+    cont = 0
+    tempo_erro = 0
+
+    while True:
+        chave_step = encontra_chave_step(navegador, CEP, num)
+        if chave_step.isnumeric():
+            chave_step = int(chave_step)
+            tempo_erro += chave_step
+        else:
+            if tempo_erro > 0:
+                lista_aux_chat.append(tempo_erro)
+            lista_aux_chat.append(chave_step)
+            tempo_erro = 0
+
+        chave_step = str(chave_step)
+        if chave_step in 'Oferta Planos':
+            sleep(4)
+        elif chave_step in 'Confirma Pedido ,Confirma Pedido2':
+            sleep(2)
+
+        try:
+            navegador.find_element(By.ID, 'msg-textarea').send_keys(steps[chave_step][1], Keys.ENTER)
+        except:
+            pass
+
+        if chave_step in 'Transbordo ATH, Consultor Indisponível, Finalização':
+            break
+        elif chave_step == '1':
+            cont += 1
+            if cont >= 15:
+                chave_step = 'Chave não mapeada'
+                lista_aux_chat.append(chave_step)
+                break
+        else:
+            cont = 0
+    return lista_aux_chat[:]

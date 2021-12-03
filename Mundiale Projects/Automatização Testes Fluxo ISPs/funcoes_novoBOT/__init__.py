@@ -65,7 +65,7 @@ def url_lps():
                         'PROXXIMA': ['https://ofertastoolsnet.com.br/', '59575000', '07']},
 
              'M-O': {'VALENET': ['https://ofertasvalenet.com.br/', '31930560', '120'],
-                     'INFOVALE': ['http://ofertasinfovaletelecom.com.br/', '11925000', '710'],
+                     #'INFOVALE': ['http://ofertasinfovaletelecom.com.br/', '11925000', '710'],
                      'COPEL': ['https://ofertascopeltelecom.com.br/', '87013937', '2946'],
                      'ALGAR': ['https://ofertasalgartelecom.com.br/', '38407261', '295'],
                      'MHNET': ['https://ofertasmhnet.com.br/', '84032602', '34']
@@ -84,6 +84,8 @@ def mapeamento_steps(cep, numero):
                       'Número Ende.': ['o número do endereço', numero],
                       'Complemento': ['o complemento do endereço', 'não'],
                       'Referência': ['qual o ponto de referência do endereço', 'Não'],
+                      'Bairro': ['nome do bairro', 'NuloNulo'],
+                      'Rua': ['o nome da rua', 'NuloNulo'],
                       'Confirma endereço': ['Está correto?', 'Sim'],
                       'Oferta Planos': ['Vamos escolher o melhor plano', 1],
                       'TV': ['adicionar TV ao seu carrinho', 'Não'],
@@ -157,9 +159,7 @@ def interacao_chat(navegador, CEP, num):
             chave_step = int(chave_step)
             tempo_erro += chave_step
         else:
-            if tempo_erro > 0:
-                lista_aux_chat.append(tempo_erro)
-            lista_aux_chat.append(chave_step)
+            lista_aux_chat.append(f'{chave_step} - OK')
             tempo_erro = 0
 
         chave_step = str(chave_step)

@@ -11,20 +11,20 @@ def tratar_cidade(navegador):
         navegador.find_element(By.XPATH, '//*[@id="modal-portal"]/div/div/form/div/div/select').click()
         navegador.find_element(By.XPATH, '//*[@id="modal-portal"]/div/div/form/div/div/select/option[2]').click()
         navegador.find_element(By.XPATH, '//*[@id="modal-portal"]/div/div/form/button').click()
-        return 'OK'
+        return 'Cidade OK'
     except:
         try:
             navegador.find_element(By.XPATH, '//*[@id="__next"]/section/div/div/main/section/div/select').click()
             navegador.find_element(By.XPATH,
                                    '//*[@id="__next"]/section/div/div/main/section/div/select/option[2]').click()
-            return 'OK'
+            return 'Cidade OK'
         except:
             try:
                 navegador.find_element(By.XPATH, '//*[@id="modal-portal"]/div/div/form/div/div/div/select').click()
                 navegador.find_element(By.XPATH,
                                        '//*[@id="modal-portal"]/div/div/form/div/div/div/select/option[2]').click()
                 navegador.find_element(By.XPATH, '//*[@id="modal-portal"]/div/div/form/button').click()
-                return 'OK'
+                return 'Cidade OK'
             except:
                 return 'N/A'
                 pass
@@ -35,9 +35,9 @@ def abrir_snippet(navegador):
         sleep(1)
         navegador.execute_script('document.querySelector("#dots-cta > img").click()')  # clica snippet
         navegador.execute_script('document.querySelector("#dots-chat-cta > img").click()')  # clica no ícone webchat
-        return 'OK'
+        return 'Snippet OK'
     except:
-        return 'Não OK'
+        return 'Snippet Não OK'
 
 
 def esperar_enviar(elemento_procurado, id_html_mensagem, mensagem, tempo_espera, navegador):
@@ -146,6 +146,7 @@ def mapeamento_steps(cep, numero):
                       'Telefone 2': ['número adicional', '31966666666'],
                       'E-mail': ['e-mail para o cadastro', 'nulonulo@gmail.com'],
                       'Pagamento': ['pagamento por boleto digital ou por débito em conta', 'Boleto Digital'],
+                      'Pagamento2': ['Qual o melhor método de pagamento pra você?', 'Boleto Online'],
                       'Turno Inst.': ['o turno ideal para a instalação', 'Tarde'],
                       'Confirma Pedido': ['Preciso que você confirme as seguintes informações', 'Não Confirmo'],
                       'Confirma Pedido2': ['Você confirma as informações acima?', 'Não Confirmo'],

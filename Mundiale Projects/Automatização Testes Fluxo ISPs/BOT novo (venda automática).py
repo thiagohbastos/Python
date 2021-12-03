@@ -7,43 +7,45 @@ from funcoes_novoBOT import tratar_cidade, abrir_snippet, url_lps, encontra_chav
 
 navegador = webdriver.Chrome()
 sites = url_lps()
-steps = mapeamento_steps(sites['EVA']['VIP'][1], sites['EVA']['VIP'][2])
-resultado_etapas = list()
-resultado_geral = {'VIP': ''}
-indices = ['Carregamento LP', 'Seleciona Cidade', 'SNIPPET', 'CHAT']
+steps = mapeamento_steps(sites['EVA']['BRISANET'][1], sites['EVA']['BRISANET'][2])
+
+#ignorável por enquanto
+resultado_geral = dict()
+#Fim ignorável
+
+resultado_etapas = []
 
 try:
-    navegador.get(r'https://ofertasvipbrtelecom.com.br/')
+    navegador.get(r'https://ofertasbrisanet.com.br/')
 except:
-    resultado_etapas.append('Fora do Ar')
+    resultado_etapas.append('LP Fora do Ar')
 else:
-    resultado_etapas.append('OK')
+    resultado_etapas.append('LP OK')
 
 resultado_etapas.append(tratar_cidade(navegador))
 resultado_etapas.append(abrir_snippet(navegador))
 
 try:
     navegador.switch_to.frame(navegador.find_element(By.ID, 'blip-chat-iframe'))
-    WebDriverWait(navegador, 10).until(
-        expected_conditions.presence_of_element_located((By.XPATH, '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div/div[1]/div')))
 except:
-    resultado_etapas.append('Não carregou')
+    resultado_etapas.append('CHAT não OK.')
 else:
-    resultado_etapas.append('OK')
+    resultado_etapas.append('CHAT OK')
 
 cont = 0
 tempo_erro = 0
+
 while True:
-    chave_step = encontra_chave_step(navegador, sites['EVA']['VIP'][1], sites['EVA']['VIP'][2])
-    print(chave_step)
+    chave_step = encontra_chave_step(navegador, sites['EVA']['BRISANET'][1], sites['EVA']['BRISANET'][2])
+    #print(chave_step)
 
     if chave_step.isnumeric():
         chave_step = int(chave_step)
         tempo_erro += chave_step
     else:
         if tempo_erro > 0:
-            indices.append(tempo_erro)
-        indices.append(chave_step)
+            resultado_etapas.append(tempo_erro)
+        resultado_etapas.append(chave_step)
         tempo_erro = 0
     chave_step = str(chave_step)
     if chave_step == 'Oferta Planos':
@@ -60,4 +62,4 @@ while True:
             break
     else:
         cont = 0
-print(indices)
+print(resultado_etapas)

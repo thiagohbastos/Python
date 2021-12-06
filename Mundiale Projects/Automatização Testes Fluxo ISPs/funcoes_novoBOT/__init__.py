@@ -77,6 +77,7 @@ def mapeamento_steps(cep, numero):
     palavras_chave = {'ERRO1': ['Ocorreu um erro'],
                       'ERRO2': ['Não entendi'],
                       'BUG BLINK': ['Você receberá sua fatura no e-mail informado em até 5 dias antes do vencimento.', 'Ok'],
+                      'Outro Endereço': ['Gostaria de solicitar para outro endereço?', 'Transbordar para ATH'],
                       'Consultor Indisponível': ['Os nossos consultores estão disponíveis das'],
                       'Finalização': ['Estamos finalizando o seu atendimento'],
                       'Já sou Cliente': ['Você já é nosso cliente?', 'Não'],

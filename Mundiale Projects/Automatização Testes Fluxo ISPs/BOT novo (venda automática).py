@@ -35,7 +35,8 @@ elif resp == 4:
 if resp == 0:
     for k, squad in sites.items():
         for k2, lp in squad.items():
-            resultado_geral[k2] = ''
+            print(f'Estou iniciando os testes na \033[1:34m{k2}\033[m.')
+            resultado_geral[k2] = []
             try:
                 if sites[k][k2][0] == 'https://ofertasblinktelecom.com.br/':
                     navegador.get(lp[0])
@@ -43,8 +44,9 @@ if resp == 0:
                     navegador.switch_to.new_window('tab')
                     navegador.get(lp[0])
             except:
-                resultado_etapas.append('LP Fora do Ar')
-                resultado_etapas.clear()
+                resultado_geral[k2] = 'LP Fora do Ar'
+                print('Teste finalizado com falha no carregamento da LP!')
+                print('\033[1:33m-' * 40, end='\033[m\n')
                 continue
             else:
                 c = sites[k][k2][1]
@@ -52,11 +54,12 @@ if resp == 0:
                 resultado_etapas.append('LP OK')
                 resultado_etapas.append(tratar_cidade(navegador))
                 resultado_etapas.append(abrir_snippet(navegador))
-
                 try:
                     navegador.switch_to.frame(navegador.find_element(By.ID, 'blip-chat-iframe'))
                 except:
                     resultado_etapas.append('CHAT não OK.')
+                    for cont in range(0, len(lista_auxiliar)):
+                        resultado_etapas.append(lista_auxiliar[cont])
                     continue
                 else:
                     resultado_etapas.append('CHAT OK')
@@ -68,20 +71,23 @@ if resp == 0:
                 resultado_geral[k2] = resultado_etapas[:]
                 resultado_etapas.clear()
                 lista_auxiliar.clear()
+                print('Teste finalizado com êxito!')
+                print('\033[1:33m-' * 40, end='\033[m\n')
 
 else:
     for k2, lp in sites[resp].items():
-        resultado_geral[k2] = ''
+        resultado_geral[k2] = []
         try:
+            print(f'Estou iniciando os testes na \033[1:34m{k2}\033[m.')
             if k2 in 'BLINK TVN MOB VALENET':
                 navegador.get(lp[0])
             else:
                 navegador.switch_to.new_window('tab')
                 navegador.get(lp[0])
         except:
-            resultado_etapas.append('Fora do Ar')
-            resultado_etapas.clear()
-            continue
+            resultado_geral[k2] = 'LP Fora do Ar'
+            print('Teste finalizado com falha no carregamento da LP!')
+            print('\033[1:33m-' * 40, end='\033[m\n')
         else:
             c = sites[resp][k2][1]
             n = sites[resp][k2][2]
@@ -104,6 +110,8 @@ else:
             resultado_geral[k2] = resultado_etapas[:]
             resultado_etapas.clear()
             lista_auxiliar.clear()
+            print('Teste finalizado com êxito!')
+            print('\033[1:33m-' * 40, end='\033[m\n')
 
 for key, valor in resultado_geral.items():
     if len(valor) > tamanho_maximo_etapas:
@@ -117,3 +125,4 @@ for key, valor in resultado_geral.items():
 
 df = pd.DataFrame(data=resultado_geral)
 df.to_excel(f'Teste de Fluxo - {resp}.xlsx', sheet_name=f'{datetime.date.today()}')
+

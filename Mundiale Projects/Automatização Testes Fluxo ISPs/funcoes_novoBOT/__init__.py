@@ -76,6 +76,7 @@ def url_lps():
 def mapeamento_steps(cep, numero):
     palavras_chave = {'ERRO1': ['Ocorreu um erro'],
                       'ERRO2': ['Não entendi'],
+                      'BUG BLINK': ['Você receberá sua fatura no e-mail informado em até 5 dias antes do vencimento.', 'Ok'],
                       'Consultor Indisponível': ['Os nossos consultores estão disponíveis das'],
                       'Finalização': ['Estamos finalizando o seu atendimento'],
                       'Já sou Cliente': ['Você já é nosso cliente?', 'Não'],
@@ -90,6 +91,7 @@ def mapeamento_steps(cep, numero):
                       'Oferta Planos': ['Vamos escolher o melhor plano', 1],
                       'TV': ['adicionar TV ao seu carrinho', 'Não'],
                       'Tel Fixo': ['adicionar Telefone Fixo ao seu carrinho', 'Não'],
+                      'Tel Móvel': ['adicionar Telefone Móvel ao seu carrinho', 'Não'],
                       'Nome': ['me informe seu nome completo', 'Teste Fluxo Completo'],
                       'CPF': ['Me diga o seu CPF', '96315157459'],
                       'RG': ['número do seu RG', '00000000'],

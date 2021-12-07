@@ -42,7 +42,7 @@ def abrir_snippet(navegador):
 
 # Defs Novas:
 def url_lps():
-    sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
+    sites = {'EVA': {#'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
                      'BRISANET': ['https://ofertasbrisanet.com.br', '59607571', '241'],
                      'TELY': ['https://ofertastely.com.br/', '58038000', '315'],
                      'LIGUE': ['https://ofertasligue.net/', '87005002', '405'],
@@ -74,8 +74,11 @@ def url_lps():
 
 
 def mapeamento_steps(cep, numero):
-    palavras_chave = {'ERRO1': ['Ocorreu um erro'],
-                      'ERRO2': ['Não entendi'],
+    palavras_chave = {'ERRO Geral': ['Ocorreu um erro'], #Erro geral
+                      'ERRO Compreensão': ['Não entendi'], #Erro de compreensão da mensagem enviada
+                      'ERRO Viabilidade': ['Estou com problemas'], #Erro de busca de viabilidade
+                      'ERRO Busca CEP': ['Não encontrei nenhum endereço'], #Erro na busca de CEP
+                      'ERRO Transbordo Precoce': ['não consegui te entender'], #Erro de transbordo antes do fim do fluxo
                       'BUG BLINK': ['Você receberá sua fatura no e-mail informado em até 5 dias antes do vencimento.', 'Ok'],
                       'Outro Endereço': ['Gostaria de solicitar para outro endereço?', 'Transbordar para ATH'],
                       'Consultor Indisponível': ['Os nossos consultores estão disponíveis das'],
@@ -100,6 +103,7 @@ def mapeamento_steps(cep, numero):
                       'Nome Mãe': ['nome da sua mãe', 'Teste Nome Mãe'],
                       'Gênero': ['me informe o seu gênero', 'Não binário'],
                       'Estado Civil': ['estado civil', 'Solteiro'],
+                      'Profissão': ['sua profissão atual', 'Analista de Fluxo'],
                       'Telefone': ['número preferível', '31955555555'],
                       'Telefone 2': ['número adicional', '31966666666'],
                       'E-mail': ['e-mail para o cadastro', 'nulonulo@gmail.com'],
@@ -120,7 +124,7 @@ def mapeamento_steps(cep, numero):
 
 def encontra_chave_step(navegador, cep, numero):
     steps_local = mapeamento_steps(cep, numero)
-
+    cont = 0
     while True:
         n_bloco_atual = len(navegador.find_elements(By.XPATH, '//*[@id="messages-list"]/div[1]/div/div/div[2]/div'))
         if n_bloco_atual % 2 == 0 and n_bloco_atual > 0:
@@ -134,6 +138,10 @@ def encontra_chave_step(navegador, cep, numero):
                 continue
         else:
             sleep(0.5)
+            cont += 0.5
+            if cont >= 1:
+                break
+
     n_ultima_msg = len(navegador.find_elements(
         By.XPATH,f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]/div[2]/div'))
     try:
@@ -153,11 +161,11 @@ def encontra_chave_step(navegador, cep, numero):
 def interacao_chat(navegador, CEP, num):
     steps = mapeamento_steps(CEP, num)
     lista_aux_chat = []
-    cont = 0
     tempo_erro = 0
 
     while True:
         chave_step = encontra_chave_step(navegador, CEP, num)
+        print(chave_step)
         if chave_step.isnumeric():
             chave_step = int(chave_step)
             tempo_erro += chave_step
@@ -176,14 +184,19 @@ def interacao_chat(navegador, CEP, num):
         except:
             pass
 
+        n_bloco_atual = len(navegador.find_elements(By.XPATH, '//*[@id="messages-list"]/div[1]/div/div/div[2]/div'))
         if chave_step in 'Transbordo ATH, Consultor Indisponível, Finalização':
             break
-        elif chave_step == '1':
-            cont += 1
-            if cont >= 15:
+        elif chave_step == '1' and n_bloco_atual % 2 == 0 and n_bloco_atual > 0:
+            if tempo_erro >= 15:
                 chave_step = 'Chave não mapeada'
                 lista_aux_chat.append(chave_step)
                 break
+        elif chave_step == '1' and n_bloco_atual % 2 != 0 and n_bloco_atual > 0:
+            if tempo_erro >= 15:
+                chave_step = f'TIME ERROR'
+                lista_aux_chat.append(chave_step)
+                break
         else:
-            cont = 0
+            tempo_erro = 0
     return lista_aux_chat[:]

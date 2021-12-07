@@ -124,5 +124,4 @@ for key, valor in resultado_geral.items():
             valor.append('-')
 
 df = pd.DataFrame(data=resultado_geral)
-df.to_excel(f'Teste de Fluxo - {resp}.xlsx', sheet_name=f'{datetime.date.today()}')
-
+df.to_excel(f'Teste de Fluxo - {"Todos Squads" if resp == 0 else resp} - {datetime.date.today()}.xlsx')

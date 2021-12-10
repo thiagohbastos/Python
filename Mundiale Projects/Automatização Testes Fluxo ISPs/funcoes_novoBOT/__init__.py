@@ -42,12 +42,12 @@ def abrir_snippet(navegador):
 
 # Defs Novas:
 def url_lps():
-    sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
-                     'BRISANET': ['https://ofertasbrisanet.com.br', '59607571', '241'],
-                     'TELY': ['https://ofertastely.com.br/', '58038000', '315'],
-                     'LIGUE': ['https://ofertasligue.net/', '87005002', '405'],
-                     'SUMICITY': ['https://ofertassumicity.com.br/', '27534240', '382'],
-                     'VIP': ['https://ofertasvipbrtelecom.com.br/', '09415110', '16']
+    sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148']#,
+                     #'BRISANET': ['https://ofertasbrisanet.com.br', '59607571', '241'],
+                     #'TELY': ['https://ofertastely.com.br/', '58038000', '315'],
+                     #'LIGUE': ['https://ofertasligue.net/', '87005002', '405'],
+                     #'SUMICITY': ['https://ofertassumicity.com.br/', '27534240', '382'],
+                     #'VIP': ['https://ofertasvipbrtelecom.com.br/', '09415110', '16']
                      },
 
              'WALL-E': {'TVN': ['https://ofertastvn.com.br', '65130000', '325'],
@@ -79,16 +79,17 @@ def mapeamento_steps(cep='30000000', numero='01', dt_vencimento='não sei'):
                       'ERRO Viabilidade': ['Estou com problemas'], #Erro de busca de viabilidade
                       'ERRO Busca CEP': ['Não encontrei nenhum endereço'], #Erro na busca de CEP
                       'ERRO Transbordo Precoce': ['não consegui te entender'], #Erro de transbordo antes do fim do fluxo
-                      'ERRO-Fluxo': ['Você receberá sua fatura no e-mail informado em até 5 dias antes do vencimento.'],
                       'Outro Endereço': ['Gostaria de solicitar para outro endereço?', 'Transbordar para ATH'],
                       'Consultor Indisponível': ['Os nossos consultores estão disponíveis das'],
                       'Finalização': ['Estamos finalizando o seu atendimento'],
+                      'BUG FLUXO': ['Você receberá sua fatura no e-mail informado em até 5 dias antes do vencimento'],
                       'Já sou Cliente': ['Você já é nosso cliente?', 'Não'],
                       'Condominio': ['localizado em um condomínio', 'Não'],
                       'CEP': ['digite o seu CEP', cep],
                       'Número Ende.': ['o número do endereço', numero],
                       'Complemento': ['o complemento do endereço', 'não'],
                       'Referência': ['qual o ponto de referência do endereço', 'Não'],
+                      'Prédio': ['se encontra em um prédio', 'Não'],
                       'Bairro': ['nome do bairro', 'NuloTeste'],
                       'Rua': ['o nome da rua', 'NuloTeste'],
                       'Confirma endereço': ['Está correto?', 'Sim'],
@@ -163,18 +164,18 @@ def encontra_chave_step(navegador, cep='30000000', numero='01', dt_vencimento='n
 def interacao_chat(navegador, CEP='30000000', num='01', dt_vencimento='não sei'):
     steps = mapeamento_steps(CEP, num, dt_vencimento)
     lista_aux_chat = []
-    tempo_erro = 0
+    tempo_erro = apoio = 0
 
     while True:
         chave_step = encontra_chave_step(navegador, CEP, num, dt_vencimento)
         if chave_step.isnumeric():
-            chave_step = int(chave_step)
-            tempo_erro += chave_step
+            tempo_erro += int(chave_step)
+        elif apoio == chave_step:
+            tempo_erro += 1
         else:
             lista_aux_chat.append(f'{chave_step} - OK')
             tempo_erro = 0
 
-        chave_step = str(chave_step)
         if chave_step in 'Oferta Planos':
             sleep(2.5)
         elif chave_step in 'Confirma Pedido ,Confirma Pedido2':
@@ -188,16 +189,14 @@ def interacao_chat(navegador, CEP='30000000', num='01', dt_vencimento='não sei'
         n_bloco_atual = len(navegador.find_elements(By.XPATH, '//*[@id="messages-list"]/div[1]/div/div/div[2]/div'))
         if chave_step in 'Transbordo ATH, Consultor Indisponível, Finalização':
             break
-        elif chave_step == '1' and n_bloco_atual % 2 == 0 and n_bloco_atual > 0:
-            if tempo_erro >= 15:
-                chave_step = 'Chave não mapeada'
-                lista_aux_chat.append(chave_step)
-                break
-        elif chave_step == '1' and n_bloco_atual % 2 != 0 and n_bloco_atual > 0:
-            if tempo_erro >= 15:
-                chave_step = f'TIME ERROR'
-                lista_aux_chat.append(chave_step)
-                break
-        else:
-            tempo_erro = 0
+        elif chave_step == '1' and n_bloco_atual % 2 == 0 and n_bloco_atual > 0 and tempo_erro >= 15:
+            chave_step = 'Chave não mapeada'
+            lista_aux_chat.append(chave_step)
+            break
+        elif n_bloco_atual > 0 and tempo_erro >= 15:
+            chave_step = f'TIME ERROR'
+            lista_aux_chat.append(chave_step)
+            break
+        print(tempo_erro)
+        apoio = chave_step
     return lista_aux_chat[:]

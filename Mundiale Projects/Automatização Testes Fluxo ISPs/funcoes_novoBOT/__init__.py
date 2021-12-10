@@ -42,7 +42,7 @@ def abrir_snippet(navegador):
 
 # Defs Novas:
 def url_lps():
-    sites = {'EVA': {#'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
+    sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
                      'BRISANET': ['https://ofertasbrisanet.com.br', '59607571', '241'],
                      'TELY': ['https://ofertastely.com.br/', '58038000', '315'],
                      'LIGUE': ['https://ofertasligue.net/', '87005002', '405'],
@@ -93,7 +93,7 @@ def mapeamento_steps(cep, numero):
                       'Rua': ['o nome da rua', 'NuloNulo'],
                       'Confirma endereço': ['Está correto?', 'Sim'],
                       'Oferta Planos': ['Vamos escolher o melhor plano', 1],
-                      'TV': ['adicionar TV ao seu carrinho', 'Não'],
+                      'TV': ['adicionar TV', 'Não'],
                       'Tel Fixo': ['adicionar Telefone Fixo ao seu carrinho', 'Não'],
                       'Tel Móvel': ['adicionar Telefone Móvel ao seu carrinho', 'Não'],
                       'Nome': ['me informe seu nome completo', 'Teste Fluxo Completo'],
@@ -106,10 +106,12 @@ def mapeamento_steps(cep, numero):
                       'Profissão': ['sua profissão atual', 'Analista de Fluxo'],
                       'Telefone': ['número preferível', '31955555555'],
                       'Telefone 2': ['número adicional', '31966666666'],
+                      'Envio Boleto': ['como deseja receber seu boleto'],
                       'E-mail': ['e-mail para o cadastro', 'nulonulo@gmail.com'],
                       'Promoção': ['outra operadora de internet', 'Não'],
                       'Pagamento': ['pagamento por boleto digital ou por débito em conta', 'Boleto Digital'],
                       'Pagamento2': ['Qual o melhor método de pagamento pra você?', 'Boleto Online'],
+                      'Data Vencimento': ['datas de vencimento disponíveis'],
                       'Turno Inst.': ['o turno ideal para a instalação', 'Tarde'],
                       'Confirma Pedido': ['Preciso que você confirme as seguintes informações', 'Não Confirmo'],
                       'Confirma Pedido2': ['Você confirma as informações acima?', 'Não Confirmo'],

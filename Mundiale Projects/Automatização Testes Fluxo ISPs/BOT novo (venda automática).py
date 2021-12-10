@@ -51,6 +51,11 @@ if resp == 0:
             else:
                 c = sites[k][k2][1]
                 n = sites[k][k2][2]
+                venci = 'Não sei'
+                try:
+                    venci = sites[k][k2][3]
+                except:
+                    pass
                 resultado_etapas.append('LP OK')
                 resultado_etapas.append(tratar_cidade(navegador))
                 resultado_etapas.append(abrir_snippet(navegador))
@@ -64,7 +69,7 @@ if resp == 0:
                 else:
                     resultado_etapas.append('CHAT OK')
 
-                lista_auxiliar = interacao_chat(navegador, c, n)
+                lista_auxiliar = interacao_chat(navegador, c, n, venci)
 
                 for cont in range(0, len(lista_auxiliar)):
                     resultado_etapas.append(lista_auxiliar[cont])
@@ -91,6 +96,11 @@ else:
         else:
             c = sites[resp][k2][1]
             n = sites[resp][k2][2]
+            venci = 'Não sei'
+            try:
+                venci = sites[resp][k2][3]
+            except:
+                pass
             resultado_etapas.append('LP OK')
             resultado_etapas.append(tratar_cidade(navegador))
             resultado_etapas.append(abrir_snippet(navegador))
@@ -103,7 +113,7 @@ else:
             else:
                 resultado_etapas.append('CHAT OK')
 
-            lista_auxiliar = interacao_chat(navegador, c, n)
+            lista_auxiliar = interacao_chat(navegador, c, n, venci)
             for cont in range(0, len(lista_auxiliar)):
                 resultado_etapas.append(lista_auxiliar[cont])
 

@@ -133,5 +133,13 @@ for key, valor in resultado_geral.items():
         for cont in range(0, dif):
             valor.append('-')
 
+hora = int(str(datetime.datetime.time(datetime.datetime.today()))[:2])
+if 12 > hora >= 6:
+    turno = 'Manhã'
+elif 18 > hora >= 12:
+    turno = 'Tarde'
+else:
+    turno = 'Noite'
+
 df = pd.DataFrame(data=resultado_geral)
-df.to_excel(f'Teste de Fluxo - {"Todos Squads" if resp == 0 else resp} - {datetime.date.today()}.xlsx')
+df.to_excel(f'Teste de Fluxo - {"Geral" if resp == 0 else resp} - {turno} - {datetime.date.today()}.xlsx', index=False)

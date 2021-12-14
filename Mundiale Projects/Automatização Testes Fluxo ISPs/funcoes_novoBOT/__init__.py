@@ -42,21 +42,22 @@ def abrir_snippet(navegador):
 
 # Defs Novas:
 def url_lps():
-    sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148']#,
+    sites = {'EVA': {#'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
                      #'BRISANET': ['https://ofertasbrisanet.com.br', '59607571', '241'],
                      #'TELY': ['https://ofertastely.com.br/', '58038000', '315'],
                      #'LIGUE': ['https://ofertasligue.net/', '87005002', '405'],
                      #'SUMICITY': ['https://ofertassumicity.com.br/', '27534240', '382'],
-                     #'VIP': ['https://ofertasvipbrtelecom.com.br/', '09415110', '16']
+                     'VIP': ['https://ofertasvipbrtelecom.com.br/', '09415110', '16']
                      },
 
-             'WALL-E': {'TVN': ['https://ofertastvn.com.br', '65130000', '325'],
+             'WALL-E': {'TVN': ['https://ofertastvn.com.br', '65082223', '13'],
                         'COPREL': ['http://ofertascoprel.com.br/', '98280000', '175'],
                         'DESKTOP': ['https://ofertasdesktop.com.br', '11712020', '315'],
                         'MASTER': ['https://ofertassoumaster.com.br/', '38616072', '22'],
                         'AZZA': ['https://ofertasazza.net.br/', '18071724', '65'],
                         'FLEETNET': ['https://ofertasfleetnet.com.br/', '19026410', '885'],
-                        'SOCITEL': ['https://mkt.azza.net.br/socitel', '06770300', '350']},
+                        'SOCITEL': ['https://mkt.azza.net.br/socitel', '06770300', '350'],
+                        'INFOVALE': ['http://ofertasinfovaletelecom.com.br/', '11925000', '710']},
 
              'BURN-E': {'MOB': ['http://ofertasmobtelecom.com.br/', '60525200', '150'],
                         'WECLIX': ['http://ofertasweclix.com.br', '14807049', '60', '5'],
@@ -65,7 +66,6 @@ def url_lps():
                         'PROXXIMA': ['https://ofertastoolsnet.com.br/', '59575000', '07', '5']},
 
              'M-O': {'VALENET': ['https://ofertasvalenet.com.br/', '31930560', '120'],
-                     'INFOVALE': ['http://ofertasinfovaletelecom.com.br/', '11925000', '710'],
                      'COPEL': ['https://ofertascopeltelecom.com.br/', '87013937', '2946', '5'],
                      'ALGAR': ['https://ofertasalgartelecom.com.br/', '38407261', '295', '3'],
                      'MHNET': ['https://ofertasmhnet.com.br/', '84032602', '34']
@@ -82,7 +82,6 @@ def mapeamento_steps(cep='30000000', numero='01', dt_vencimento='não sei'):
                       'Outro Endereço': ['Gostaria de solicitar para outro endereço?', 'Transbordar para ATH'],
                       'Consultor Indisponível': ['Os nossos consultores estão disponíveis das'],
                       'Finalização': ['Estamos finalizando o seu atendimento'],
-                      'BUG FLUXO': ['Você receberá sua fatura no e-mail informado em até 5 dias antes do vencimento'],
                       'Já sou Cliente': ['Você já é nosso cliente?', 'Não'],
                       'Condominio': ['localizado em um condomínio', 'Não'],
                       'CEP': ['digite o seu CEP', cep],
@@ -113,7 +112,7 @@ def mapeamento_steps(cep='30000000', numero='01', dt_vencimento='não sei'):
                       'Pagamento': ['pagamento por boleto digital ou por débito em conta', 'Boleto Digital'],
                       'Pagamento2': ['Qual o melhor método de pagamento pra você?', 'Boleto Online'],
                       'Data Vencimento': ['datas de vencimento disponíveis', dt_vencimento],
-                      'Turno Inst.': ['o turno ideal para a instalação', 'Tarde'],
+                      'Turno Inst.': ['o turno ideal para a instalação', 'Manhã'],
                       'Confirma Pedido': ['Preciso que você confirme as seguintes informações', 'Não Confirmo'],
                       'Confirma Pedido2': ['Você confirma as informações acima?', 'Não Confirmo'],
                       'Motivo não confirmação': ['Você não confirmou por qual motivo?', 'Falar com humano'],
@@ -197,6 +196,5 @@ def interacao_chat(navegador, CEP='30000000', num='01', dt_vencimento='não sei'
             chave_step = f'TIME ERROR'
             lista_aux_chat.append(chave_step)
             break
-        print(tempo_erro)
         apoio = chave_step
     return lista_aux_chat[:]

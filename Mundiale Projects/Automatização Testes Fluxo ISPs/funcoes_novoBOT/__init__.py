@@ -42,11 +42,11 @@ def abrir_snippet(navegador):
 
 # Defs Novas:
 def url_lps():
-    sites = {'EVA': {#'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
-                     #'BRISANET': ['https://ofertasbrisanet.com.br', '59607571', '241'],
-                     #'TELY': ['https://ofertastely.com.br/', '58038000', '315'],
-                     #'LIGUE': ['https://ofertasligue.net/', '87005002', '405'],
-                     #'SUMICITY': ['https://ofertassumicity.com.br/', '27534240', '382'],
+    sites = {'EVA': {'BLINK': ['https://ofertasblinktelecom.com.br/', '31235060', '148'],
+                     'BRISANET': ['https://ofertasbrisanet.com.br', '59607571', '241'],
+                     'TELY': ['https://ofertastely.com.br/', '58038000', '315'],
+                     'LIGUE': ['https://ofertasligue.net/', '87005002', '405'],
+                     'SUMICITY': ['https://ofertassumicity.com.br/', '27534240', '382'],
                      'VIP': ['https://ofertasvipbrtelecom.com.br/', '09415110', '16']
                      },
 

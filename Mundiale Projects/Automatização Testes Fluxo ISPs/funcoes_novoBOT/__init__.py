@@ -57,16 +57,18 @@ def url_lps():
                         'AZZA': ['https://ofertasazza.net.br/', '18071724', '65'],
                         'FLEETNET': ['https://ofertasfleetnet.com.br/', '19026410', '885'],
                         'SOCITEL': ['https://mkt.azza.net.br/socitel', '06770300', '350'],
-                        'INFOVALE': ['http://ofertasinfovaletelecom.com.br/', '11925000', '710']},
+                        'INFOVALE': ['http://ofertasinfovaletelecom.com.br/', '11925000', '710']
+                        },
 
              'BURN-E': {'MOB': ['http://ofertasmobtelecom.com.br/', '60525200', '150'],
                         'WECLIX': ['http://ofertasweclix.com.br', '14807049', '60', '5'],
                         'CABONNET': ['https://ofertascabonnet.com.br/', '19042410', '347', '5'],
                         'SERCOMTEL': ['http://ofertasercomtel.com.br/', '86055630', '995'],
-                        'PROXXIMA': ['https://ofertastoolsnet.com.br/', '59575000', '07', '5']},
+                        'PROXXIMA': ['https://ofertastoolsnet.com.br/', '59575000', '07', '5']
+                        },
 
              'M-O': {'VALENET': ['https://ofertasvalenet.com.br/', '31930560', '120'],
-                     'COPEL': ['https://ofertascopeltelecom.com.br/', '87013937', '2946', '5'],
+                     'COPEL': ['https://ofertascopeltelecom.com.br/', '86320970', '50', '5'],
                      'ALGAR': ['https://ofertasalgartelecom.com.br/', '38407261', '295', '3'],
                      'MHNET': ['https://ofertasmhnet.com.br/', '84032602', '34']
                      }}
@@ -178,7 +180,7 @@ def interacao_chat(navegador, CEP='30000000', num='01', dt_vencimento='não sei'
         if chave_step in 'Oferta Planos':
             sleep(2.5)
         elif chave_step in 'Confirma Pedido ,Confirma Pedido2':
-            sleep(1.5)
+            sleep(0.5)
 
         try:
             navegador.find_element(By.ID, 'msg-textarea').send_keys(steps[chave_step][1], Keys.ENTER)

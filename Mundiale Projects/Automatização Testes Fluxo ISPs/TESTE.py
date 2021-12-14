@@ -9,7 +9,6 @@ sites = url_lps()
 resultado_etapas = []
 resultado_geral = dict()
 lista_auxiliar = []
-tamanho_maximo_etapas = 0
 
 while True:
     print('''Realizar testes para qual Squad?
@@ -22,6 +21,12 @@ while True:
     if resp in range(0, 5):
         break
     print('\033[1:31mOpção inválida!\033[m')
+while True:
+    salvar = str(input('\nGostaria de salvar os resultados em arquivo xlsx? [S/N] ')).upper().strip()
+    if salvar in 'SN':
+        break
+    else:
+        print('\033[1:31mOpção inválida!\033[m')
 
 if resp == 1:
     resp = 'EVA'
@@ -78,6 +83,20 @@ if resp == 0:
                 lista_auxiliar.clear()
                 print('Teste finalizado com êxito!')
 
+        tamanho_maximo_etapas = 0
+        for operacao in resultado_geral.values():
+            if len(operacao) > tamanho_maximo_etapas:
+                tamanho_maximo_etapas = len(operacao)
+
+        for operacao in resultado_geral.values():
+            if len(operacao) < tamanho_maximo_etapas:
+                dif = tamanho_maximo_etapas - len(operacao)
+                for cont in range(0, dif):
+                    operacao.append('-')
+
+        vars()[f'df_{k}'] = pd.DataFrame(data=resultado_geral)
+        resultado_geral.clear()
+
 else:
     for k2, lp in sites[resp].items():
         resultado_geral[k2] = []
@@ -121,15 +140,19 @@ else:
             lista_auxiliar.clear()
             print('Teste finalizado com êxito!')
 
-for key, valor in resultado_geral.items():
-    if len(valor) > tamanho_maximo_etapas:
-        tamanho_maximo_etapas = len(valor)
+        tamanho_maximo_etapas = 0
+        for operacao in resultado_geral.values():
+            if len(operacao) > tamanho_maximo_etapas:
+                tamanho_maximo_etapas = len(operacao)
 
-for key, valor in resultado_geral.items():
-    if len(valor) < tamanho_maximo_etapas:
-        dif = tamanho_maximo_etapas - len(valor)
-        for cont in range(0, dif):
-            valor.append('-')
+        for operacao in resultado_geral.values():
+            if len(operacao) < tamanho_maximo_etapas:
+                dif = tamanho_maximo_etapas - len(operacao)
+                for cont in range(0, dif):
+                    operacao.append('-')
+
+        vars()[f'df_{resp}'] = pd.DataFrame(data=resultado_geral)
+        resultado_geral.clear()
 
 hora = int(str(datetime.datetime.time(datetime.datetime.today()))[:2])
 if 12 > hora >= 6:
@@ -139,5 +162,13 @@ elif 18 > hora >= 12:
 else:
     turno = 'Noite'
 
-df = pd.DataFrame(data=resultado_geral)
-df.to_excel(f'Teste de Fluxo - {"Geral" if resp == 0 else resp} - {turno} - {datetime.date.today()}.xlsx', index=False)
+if salvar == 'S':
+    arquivo = pd.ExcelWriter(
+        f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/'
+        f'Testes de Fluxo {datetime.date.today().day}-{datetime.date.today().month} ({turno}).xlsx', engine='xlsxwriter')
+    if resp == 0:
+        for k, squad in sites.items():
+            vars()[f'df_{k}'].to_excel(arquivo, sheet_name=k, index=False)
+    else:
+        vars()[f'df_{resp}'].to_excel(arquivo, sheet_name=resp, index=False)
+    arquivo.save()

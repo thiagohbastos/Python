@@ -2,8 +2,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from time import time, sleep
-
+from time import sleep
+import datetime
 
 # Defs antigas:
 def tratar_cidade(navegador):
@@ -163,7 +163,7 @@ def encontra_chave_step(navegador, cep='30000000', numero='01', dt_vencimento='n
         return '1'
 
 
-def interacao_chat(navegador, CEP='30000000', num='01', dt_vencimento='não sei'):
+def interacao_chat(navegador, operacao, CEP='30000000', num='01', dt_vencimento='não sei'):
     steps = mapeamento_steps(CEP, num, dt_vencimento)
     lista_aux_chat = []
     tempo_erro = apoio = 0
@@ -187,6 +187,9 @@ def interacao_chat(navegador, CEP='30000000', num='01', dt_vencimento='não sei'
             navegador.find_element(By.ID, 'msg-textarea').send_keys(steps[chave_step][1], Keys.ENTER)
         except:
             pass
+        if chave_step.split()[0].upper() in 'ERRO':
+            navegador.save_screenshot(f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/prints/'
+                                      f'{operacao} - {chave_step} ({datetime.date.today()}).png')
 
         n_bloco_atual = len(navegador.find_elements(By.XPATH, '//*[@id="messages-list"]/div[1]/div/div/div[2]/div'))
         if chave_step in 'Transbordo ATH, Consultor Indisponível, Finalização':
@@ -194,10 +197,14 @@ def interacao_chat(navegador, CEP='30000000', num='01', dt_vencimento='não sei'
         elif chave_step == '1' and n_bloco_atual % 2 == 0 and n_bloco_atual > 0 and tempo_erro >= 15:
             chave_step = 'Chave não mapeada'
             lista_aux_chat.append(chave_step)
+            navegador.save_screenshot(f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/prints/'
+                                      f'{operacao} - {chave_step} ({datetime.date.today()}).png')
             break
         elif n_bloco_atual > 0 and tempo_erro >= 15:
-            chave_step = f'TIME ERROR'
+            chave_step = f'ERROR TIMEOUT'
             lista_aux_chat.append(chave_step)
+            navegador.save_screenshot(f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/prints/'
+                                      f'{operacao} - {chave_step} ({datetime.date.today()}).png')
             break
         apoio = chave_step
     return lista_aux_chat[:]

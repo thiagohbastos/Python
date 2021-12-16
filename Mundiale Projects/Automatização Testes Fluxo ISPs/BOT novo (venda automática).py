@@ -1,6 +1,8 @@
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 from funcoes_novoBOT import tratar_cidade, abrir_snippet, url_lps, interacao_chat
 import datetime
 
@@ -9,7 +11,6 @@ sites = url_lps()
 resultado_etapas = []
 resultado_geral = dict()
 lista_auxiliar = []
-tamanho_maximo_etapas = 0
 
 while True:
     print('''Realizar testes para qual Squad?
@@ -22,6 +23,12 @@ while True:
     if resp in range(0, 5):
         break
     print('\033[1:31mOpção inválida!\033[m')
+while True:
+    salvar = str(input('\nGostaria de salvar os resultados em arquivo xlsx? [S/N] ')).upper().strip()
+    if salvar in 'SN':
+        break
+    else:
+        print('\033[1:31mOpção inválida!\033[m')
 
 if resp == 1:
     resp = 'EVA'
@@ -61,22 +68,39 @@ if resp == 0:
                 resultado_etapas.append(abrir_snippet(navegador))
                 try:
                     navegador.switch_to.frame(navegador.find_element(By.ID, 'blip-chat-iframe'))
+                    WebDriverWait(navegador, 30).until(
+                        expected_conditions.presence_of_element_located(
+                            (By.XPATH, '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div/div[1]/div')))
                 except:
-                    resultado_etapas.append('CHAT não OK.')
+                    resultado_etapas.append('CHAT TIMEOUT')
                     for cont in range(0, len(lista_auxiliar)):
                         resultado_etapas.append(lista_auxiliar[cont])
                     continue
                 else:
                     resultado_etapas.append('CHAT OK')
 
-                lista_auxiliar = interacao_chat(navegador, c, n, venci)
-
+                lista_auxiliar = interacao_chat(navegador, k2, c, n, venci)
                 for cont in range(0, len(lista_auxiliar)):
                     resultado_etapas.append(lista_auxiliar[cont])
+
                 resultado_geral[k2] = resultado_etapas[:]
                 resultado_etapas.clear()
                 lista_auxiliar.clear()
                 print('Teste finalizado com êxito!')
+
+        tamanho_maximo_etapas = 0
+        for operacao in resultado_geral.values():
+            if len(operacao) > tamanho_maximo_etapas:
+                tamanho_maximo_etapas = len(operacao)
+
+        for operacao in resultado_geral.values():
+            if len(operacao) < tamanho_maximo_etapas:
+                dif = tamanho_maximo_etapas - len(operacao)
+                for cont in range(0, dif):
+                    operacao.append('-')
+
+        vars()[f'df_{k}'] = pd.DataFrame(data=resultado_geral)
+        resultado_geral.clear()
 
 else:
     for k2, lp in sites[resp].items():
@@ -106,13 +130,17 @@ else:
 
             try:
                 navegador.switch_to.frame(navegador.find_element(By.ID, 'blip-chat-iframe'))
+                WebDriverWait(navegador, 30).until(
+                    expected_conditions.presence_of_element_located(
+                        (By.XPATH,
+                         '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div/div[1]/div')))
             except:
-                resultado_etapas.append('CHAT não OK.')
+                resultado_etapas.append('CHAT TIMEOUT')
                 continue
             else:
                 resultado_etapas.append('CHAT OK')
 
-            lista_auxiliar = interacao_chat(navegador, c, n, venci)
+            lista_auxiliar = interacao_chat(navegador, k2, c, n, venci)
             for cont in range(0, len(lista_auxiliar)):
                 resultado_etapas.append(lista_auxiliar[cont])
 
@@ -121,15 +149,19 @@ else:
             lista_auxiliar.clear()
             print('Teste finalizado com êxito!')
 
-for key, valor in resultado_geral.items():
-    if len(valor) > tamanho_maximo_etapas:
-        tamanho_maximo_etapas = len(valor)
+    tamanho_maximo_etapas = 0
+    for operacao in resultado_geral.values():
+        if len(operacao) > tamanho_maximo_etapas:
+            tamanho_maximo_etapas = len(operacao)
 
-for key, valor in resultado_geral.items():
-    if len(valor) < tamanho_maximo_etapas:
-        dif = tamanho_maximo_etapas - len(valor)
-        for cont in range(0, dif):
-            valor.append('-')
+    for operacao in resultado_geral.values():
+        if len(operacao) < tamanho_maximo_etapas:
+            dif = tamanho_maximo_etapas - len(operacao)
+            for cont in range(0, dif):
+                operacao.append('-')
+
+    vars()[f'df_{resp}'] = pd.DataFrame(data=resultado_geral)
+    resultado_geral.clear()
 
 hora = int(str(datetime.datetime.time(datetime.datetime.today()))[:2])
 if 12 > hora >= 6:
@@ -139,5 +171,13 @@ elif 18 > hora >= 12:
 else:
     turno = 'Noite'
 
-df = pd.DataFrame(data=resultado_geral)
-df.to_excel(f'Teste de Fluxo - {"Geral" if resp == 0 else resp} - {turno} - {datetime.date.today()}.xlsx', index=False)
+if salvar == 'S':
+    arquivo = pd.ExcelWriter(
+        f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/'
+        f'Testes de Fluxo {datetime.date.today().day}-{datetime.date.today().month} ({turno}).xlsx', engine='xlsxwriter')
+    if resp == 0:
+        for k, squad in sites.items():
+            vars()[f'df_{k}'].to_excel(arquivo, sheet_name=k, index=False)
+    else:
+        vars()[f'df_{resp}'].to_excel(arquivo, sheet_name=resp, index=False)
+    arquivo.save()

@@ -85,6 +85,7 @@ def mapeamento_steps(cep='30000000', numero='01', dt_vencimento='não sei'):
                       'Consultor Indisponível': ['Os nossos consultores estão disponíveis das'],
                       'Finalização': ['Estamos finalizando o seu atendimento'],
                       'Já sou Cliente': ['Você já é nosso cliente?', 'Não'],
+                      'Área Rural': ['em uma área rural', 'Não'],
                       'Condominio': ['localizado em um condomínio', 'Não'],
                       'CEP': ['digite o seu CEP', cep],
                       'Número Ende.': ['o número do endereço', numero],

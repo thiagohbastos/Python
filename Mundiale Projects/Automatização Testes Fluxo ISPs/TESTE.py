@@ -140,19 +140,19 @@ else:
             lista_auxiliar.clear()
             print('Teste finalizado com êxito!')
 
-        tamanho_maximo_etapas = 0
-        for operacao in resultado_geral.values():
-            if len(operacao) > tamanho_maximo_etapas:
-                tamanho_maximo_etapas = len(operacao)
+    tamanho_maximo_etapas = 0
+    for operacao in resultado_geral.values():
+        if len(operacao) > tamanho_maximo_etapas:
+            tamanho_maximo_etapas = len(operacao)
 
-        for operacao in resultado_geral.values():
-            if len(operacao) < tamanho_maximo_etapas:
-                dif = tamanho_maximo_etapas - len(operacao)
-                for cont in range(0, dif):
-                    operacao.append('-')
+    for operacao in resultado_geral.values():
+        if len(operacao) < tamanho_maximo_etapas:
+            dif = tamanho_maximo_etapas - len(operacao)
+            for cont in range(0, dif):
+                operacao.append('-')
 
-        vars()[f'df_{resp}'] = pd.DataFrame(data=resultado_geral)
-        resultado_geral.clear()
+    vars()[f'df_{resp}'] = pd.DataFrame(data=resultado_geral)
+    resultado_geral.clear()
 
 hora = int(str(datetime.datetime.time(datetime.datetime.today()))[:2])
 if 12 > hora >= 6:

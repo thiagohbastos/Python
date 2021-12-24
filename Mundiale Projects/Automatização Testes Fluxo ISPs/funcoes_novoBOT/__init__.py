@@ -179,9 +179,7 @@ def interacao_chat(navegador, operacao, CEP='30000000', num='01', dt_vencimento=
             tempo_erro = 0
 
         if chave_step in 'Oferta Planos':
-            sleep(2.5)
-        elif chave_step in 'Confirma Pedido ,Confirma Pedido2':
-            sleep(0.5)
+            sleep(3.5)
 
         try:
             navegador.find_element(By.ID, 'msg-textarea').send_keys(steps[chave_step][1], Keys.ENTER)

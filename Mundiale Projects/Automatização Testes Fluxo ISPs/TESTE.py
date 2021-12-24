@@ -1,0 +1,2 @@
+nome = 'teste'
+print(idade)

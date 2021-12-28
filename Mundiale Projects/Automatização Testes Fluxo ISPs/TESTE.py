@@ -1,2 +1,0 @@
-nome = 'teste'
-print(idade)

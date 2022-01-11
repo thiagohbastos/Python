@@ -52,7 +52,7 @@ if resp == 0:
                     navegador.switch_to.new_window('tab')
                     navegador.get(lp[0])
             except:
-                resultado_geral[k2] = 'LP Fora do Ar'
+                resultado_geral[k2] = ['LP Fora do Ar']
                 print('Teste finalizado com falha no carregamento da LP!')
                 continue
             else:
@@ -114,7 +114,7 @@ else:
                 navegador.switch_to.new_window('tab')
                 navegador.get(lp[0])
         except:
-            resultado_geral[k2] = 'LP Fora do Ar'
+            resultado_geral[k2] = ['LP Fora do Ar']
             print('Teste finalizado com falha no carregamento da LP!')
         else:
             c = sites[resp][k2][1]
@@ -174,7 +174,7 @@ else:
 if salvar == 'S':
     arquivo = pd.ExcelWriter(
         f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/'
-        f'Testes de Fluxo {datetime.date.today().day}-{datetime.date.today().month} ({turno}).xlsx', engine='xlsxwriter')
+        f'Testes de Fluxo {resp if resp != 0 else ""}{datetime.date.today().day}-{datetime.date.today().month} ({turno}).xlsx', engine='xlsxwriter')
     if resp == 0:
         for k, squad in sites.items():
             vars()[f'df_{k}'].to_excel(arquivo, sheet_name=k, index=False)

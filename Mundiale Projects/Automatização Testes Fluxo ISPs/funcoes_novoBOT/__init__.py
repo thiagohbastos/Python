@@ -52,7 +52,7 @@ def url_lps():
 
              'WALL-E': {'TVN': ['https://ofertastvn.com.br', '65082223', '13'],
                         'COPREL': ['http://ofertascoprel.com.br/', '98280000', '175'],
-                        'DESKTOP': ['https://ofertasdesktop.com.br', '11712020', '315'],
+                        'DESKTOP': ['https://desktop-fibra-internet.com.br/', '11712020', '315'],
                         'MASTER': ['https://ofertassoumaster.com.br/', '38616072', '22'],
                         'AZZA': ['https://ofertasazza.net.br/', '18071724', '65'],
                         'FLEETNET': ['https://ofertasfleetnet.com.br/', '19026410', '885'],
@@ -120,6 +120,7 @@ def mapeamento_steps(cep='30000000', numero='01', dt_vencimento='não sei'):
                       'Promoção': ['outra operadora de internet', 'Não'],
                       'Pagamento': ['pagamento por boleto digital ou por débito em conta', 'Boleto Digital'],
                       'Pagamento2': ['Qual o melhor método de pagamento pra você?', 'Boleto Online'],
+                      'Pagamento3': ['prefere realizar o pagamento por', 'Boleto'],
                       'Data Vencimento': ['datas de vencimento disponíveis', dt_vencimento],
                       'Data Vencimento2': ['melhor data de vencimento pra você', dt_vencimento],
                       'Turno Inst.': ['o turno ideal para a instalação', 'Manhã'],

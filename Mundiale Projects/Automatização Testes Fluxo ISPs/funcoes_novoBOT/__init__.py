@@ -112,7 +112,7 @@ def mapeamento_steps(cep='30000000', numero='01', dt_vencimento='não sei'):
                       'Estado Civil': ['estado civil', 'Solteiro'],
                       'Profissão': ['sua profissão atual', 'BOT Analista de Fluxo'],
                       'Telefone Princ': ['número preferível', '31955555555'],
-                      'Telefone Princ2': ['o seu melhor número', '31955555555'],
+                      'Telefone Princ2': ['seu melhor número', '31955555555'],
                       'Telefone Adic': ['número adicional', '31966666666'],
                       'Envio Boleto': ['como deseja receber seu boleto', 'E-mail'],
                       'E-mail': ['seu e-mail', 'nulonulo@gmail.com'],

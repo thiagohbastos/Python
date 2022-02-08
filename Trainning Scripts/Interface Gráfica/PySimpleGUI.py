@@ -10,4 +10,13 @@ class TelaPython:
         ]
 
         #Janela
-        janela = sg.Window
+        janela = sg.Window('Dados do Usuário').layout(layout)
+
+        #Extrair os dados da tela
+        self.button, self.values = janela.Read()
+    
+    def Iniciar(self):
+        print(self.values)
+
+tela = TelaPython()
+tela.Iniciar()

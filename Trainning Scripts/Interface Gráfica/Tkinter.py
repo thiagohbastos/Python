@@ -5,7 +5,7 @@ from ttkbootstrap import Style
 #from urllib.request import urlopen
 #from io import BytesIO
 
-style = Style(theme='darkly')
+style = Style(theme='cosmo')
 root = style.master
 
 class Funcoes():
@@ -72,10 +72,11 @@ class Application(Funcoes):
         #Linkando a barra de rolagem e a lista
         self.lista_generica.configure(yscrollcommand=self.scroll_vertical)
     def imagens(self):
-        self.imagem = PhotoImage(file=r"C:\Users\thiago.bastos\Desktop\Temporários\No meu container, roda.png")
-        self.imagem = self.imagem.subsample(5, 5)
-        self.label_imagem = Label(self.frame_geral, image=self.imagem)
-        self.label_imagem.place(relx=0.9, rely=0.9, relheight=0.1, relwidth=0.1)
+        pass
+        #self.imagem = PhotoImage(file=r"C:\Users\thiago.bastos\Desktop\Temporários\No meu container, roda.png")
+        #self.imagem = self.imagem.subsample(5, 5)
+        #self.label_imagem = Label(self.frame_geral, image=self.imagem)
+        #self.label_imagem.place(relx=0.9, rely=0.9, relheight=0.1, relwidth=0.1)
         # Imagem de URL
         #self.URL = "http://www.universeofsymbolism.com/images/ram-spirit-animal.jpg"
         #u = urlopen(self.URL)
@@ -85,7 +86,7 @@ class Application(Funcoes):
         #photo = ImageTk.PhotoImage(im)
         #self.label_imagem = tk.Label(self.frame_1, image=photo)
         #self.label_imagem.image = photo
-        #self.label_imagem.pack()
+        #self.label_imagem.pack()'''
     def criando_widgets(self):
             #WIDGET Limpar
         # Descrição do campo "Teste"

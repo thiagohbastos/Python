@@ -1,15 +1,15 @@
-from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, Frame, Entry, Scrollbar, messagebox
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
-import pandas as pd
+from pandas import ExcelWriter, DataFrame
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from time import sleep
-import datetime
+from datetime import datetime, date
+from clipboard import copy
 
 
 class Funcoes:
@@ -23,7 +23,7 @@ class Funcoes:
         self.resultado_final = []
 
         # Desativando botões da interface
-        self.box_salvar.configure(state='disable')
+        #self.box_salvar.configure(state='disable')
         self.box_squad.configure(state='disable')
         self.bt_iniciar.destroy()
         try:
@@ -31,18 +31,18 @@ class Funcoes:
         except:
             pass
         # Meios técnicos para recriar o botão
-        self.bt_iniciar = ttk.Button(self.frame_um, text='Testes Finalizados!', width=20, style=WARNING)
-        self.bt_iniciar.pack(pady=(162, 0))
+        self.bt_iniciar = ttk.Button(self.frame_um, text='Testes Finalizados!', width=20, style=SUCCESS)
+        self.bt_iniciar.pack(pady=(164, 0))
 
         # Alterando e inserindo elementos
-        '''self.root.geometry('450x750')
-        self.frame_um.place(relx=0.02, rely=0.01, relwidth=0.96, relheight=0.35)
+        self.root.geometry('450x530')
+        self.frame_um.place(relx=0.02, rely=0.01, relwidth=0.96, relheight=0.4985)
         self.frame_2()
-        self.frame_3()'''
+        self.frame_de_lista()
 
         #Iniciando o fluxo
-        self.fluxo_completo()
-        self.salvar_arquivo()
+        #self.fluxo_completo()
+        #self.salvar_arquivo()
 
     def tratar_cidade(self, navegador):
         try:
@@ -253,7 +253,7 @@ class Funcoes:
 
     def salvar_arquivo(self):
         if self.salvar == 'Sim':
-            hora = int(str(datetime.datetime.time(datetime.datetime.today()))[:2])
+            hora = int(str(datetime.time(datetime.today()))[:2])
             if 12 > hora >= 6:
                 turno = 'Manhã'
             elif 18 > hora >= 12:
@@ -262,8 +262,8 @@ class Funcoes:
                 turno = 'Noite'
             pasta_arquivo = self.entry_destino_arquivo.get()
             pasta_arquivo = f'{pasta_arquivo}/Testes de Fluxo {self.resp if self.resp != 0 else ""} ' \
-                            f'{datetime.date.today().day}-{datetime.date.today().month} ({turno}).xlsx'
-            arquivo = pd.ExcelWriter(pasta_arquivo, engine='xlsxwriter')
+                            f'{date.today().day}-{date.today().month} ({turno}).xlsx'
+            arquivo = ExcelWriter(pasta_arquivo, engine='xlsxwriter')
             if self.resp == 0:
                 for i, resultado in enumerate(self.resultado_final):
                     self.resultado_final[i].to_excel(arquivo, sheet_name=i, index=False)
@@ -278,8 +278,6 @@ class Funcoes:
         if self.resp == 0:
             for k, squad in self.sites.items():
                 for k2, lp in squad.items():
-                    print('\033[1:33m-' * 40, end='\033[m\n')
-                    print(f'Estou iniciando os testes na \033[1:34m{k2}\033[m.')
                     self.resultado_geral[k2] = []
                     try:
                         if self.sites[k][k2][0] == 'https://ofertasblinktelecom.com.br/':
@@ -289,7 +287,6 @@ class Funcoes:
                             self.navegador.get(lp[0])
                     except:
                         self.resultado_geral[k2] = ['LP Fora do Ar']
-                        print('Teste finalizado com falha no carregamento da LP!')
                         continue
                     else:
                         c = self.sites[k][k2][1]
@@ -323,7 +320,6 @@ class Funcoes:
                         self.resultado_geral[k2] = self.resultado_etapas[:]
                         self.resultado_etapas.clear()
                         lista_auxiliar.clear()
-                        print('Teste finalizado com êxito!')
 
                 tamanho_maximo_etapas = 0
                 for operacao in self.resultado_geral.values():
@@ -336,7 +332,7 @@ class Funcoes:
                         for cont in range(0, dif):
                             operacao.append('-')
 
-                vars()[f'df_{k}'] = pd.DataFrame(data=self.resultado_geral)
+                vars()[f'df_{k}'] = DataFrame(data=self.resultado_geral)
                 self.resultado_geral.clear()
                 self.resultado_final.append(vars()[f'df_{k}'])
 
@@ -344,8 +340,6 @@ class Funcoes:
             for k2, lp in self.sites[self.resp].items():
                 self.resultado_geral[k2] = []
                 try:
-                    print('\033[1:33m-' * 40, end='\033[m\n')
-                    print(f'Estou iniciando os testes na \033[1:34m{k2}\033[m.')
                     if k2 in 'BLINK TVN MOB VALENET':
                         self.navegador.get(lp[0])
                     else:
@@ -353,7 +347,6 @@ class Funcoes:
                         self.navegador.get(lp[0])
                 except:
                     self.resultado_geral[k2] = ['LP Fora do Ar']
-                    print('Teste finalizado com falha no carregamento da LP!')
                 else:
                     c = self.sites[self.resp][k2][1]
                     n = self.sites[self.resp][k2][2]
@@ -385,7 +378,6 @@ class Funcoes:
                     self.resultado_geral[k2] = self.resultado_etapas[:]
                     self.resultado_etapas.clear()
                     lista_auxiliar.clear()
-                    print('Teste finalizado com êxito!')
 
             tamanho_maximo_etapas = 0
             for operacao in self.resultado_geral.values():
@@ -398,7 +390,7 @@ class Funcoes:
                     for cont in range(0, dif):
                         operacao.append('-')
 
-            vars()[f'df_{self.resp}'] = pd.DataFrame(data=self.resultado_geral)
+            vars()[f'df_{self.resp}'] = DataFrame(data=self.resultado_geral)
             self.resultado_geral.clear()
             self.resultado_final.append(vars()[f'df_{self.resp}'])
 
@@ -408,7 +400,9 @@ class Janela_principal(Funcoes):
         # Atributos
         self.estilo_1 = Style(theme='cosmo')
         # ttk.Style().configure('TEntry')
-        ttk.Style().configure('TButton', font='sans-serif 10')
+        self.estilo_1.configure('TButton', font='sans-serif 11')
+        self.estilo_1.configure('Treeview', foreground='#3D3D3D', rowheight=25)
+        self.estilo_1.map('Treeview', background=[('selected', 'green')])
         # Define tema e cria o objeto janela
         self.root = self.estilo_1.master
         # Funções
@@ -433,12 +427,39 @@ class Janela_principal(Funcoes):
         self.frame_um.place(relx=0.02, rely=0.027, relwidth=0.96, relheight=0.9461)
 
     def frame_2(self):
-        self.frame_dois = ttk.LabelFrame(self.root, text=' Status ')
-        self.frame_dois.place(relx=0.02, rely=0.37, relwidth=0.96, relheight=0.15)
+        self.frame_dois = ttk.LabelFrame(self.root, text=' Observações ')
+        self.frame_dois.place(relx=0.02, rely=0.52, relwidth=0.96, relheight=0.465)
 
-    def frame_3(self):
-        self.frame_tres = ttk.LabelFrame(self.root, text=' Observações ')
-        self.frame_tres.place(relx=0.02, rely=0.53, relwidth=0.96, relheight=0.46)
+    def frame_de_lista(self):
+        # Barra de Rolagem vertical
+        self.scroll_vertical = Scrollbar(self.frame_dois, orient='vertical')
+        self.scroll_vertical.place(relx=0.92, rely=0.01, relwidth=0.07, relheight=0.88)
+        # Barra de Rolagem horizontal
+        self.scroll_horizontal = Scrollbar(self.frame_dois, orient='horizontal')
+        self.scroll_horizontal.place(relx=0.01, rely=0.9, relwidth=0.9, relheight=0.08)
+        #Criando o frame com o nome das colunas e linkando-o aos scrolls
+        self.lista_observacoes = ttk.Treeview(self.frame_dois, height=2, columns=('squad', 'operação', 'observação', 'mensagem'),
+                                              show='headings',
+                                              yscrollcommand=self.scroll_vertical.set,
+                                              xscrollcommand=self.scroll_horizontal.set)
+        self.lista_observacoes.place(relx=0.01, rely=0.01, relwidth=0.9, relheight=0.88)
+        # Linkando a barra de rolagem e a lista
+        self.scroll_vertical.config(command=self.lista_observacoes.yview)
+        self.scroll_horizontal.config(command=self.lista_observacoes.xview)
+        #Cabeçalho das colunas
+        #self.lista_generica.heading('#0', text='')
+        self.lista_observacoes.heading('#1', text='Squad', anchor=W)
+        self.lista_observacoes.heading('#2', text='Operação', anchor=W)
+        self.lista_observacoes.heading('#3', text='Observação', anchor=W)
+        self.lista_observacoes.heading('#4', text='Mensagem', anchor=W)
+        #Tamanho das colunas
+        self.lista_observacoes.column('#1', width=80, anchor=W)
+        self.lista_observacoes.column('#2', width=80, anchor=W)
+        self.lista_observacoes.column('#3', width=100, anchor=W)
+        self.lista_observacoes.column('#3', width=200, anchor=W)
+        for x in range(1, 8):
+            self.lista_observacoes.insert('', END, values=('EVA', 'LIGUE', 'ERROR TIMEOUT', 'TESTE TESTE TESTE TESTE TESTE TESTE'))
+            self.lista_observacoes.insert('', END, values=('WALL-E', 'TESTE', 'ERROR TIMEOUT', 'TESTE TESTE TESTE TESTE TESTE TESTE'))
 
     def titulo(self):
         self.titulo_lb = ttk.Label(self.frame_um, text='BOT de Teste de Fluxo LP', font=('sans-serif', '18', 'bold'),
@@ -484,13 +505,24 @@ class Janela_principal(Funcoes):
             self.entry_destino_arquivo.place(relx=0.375, rely=0.615, relwidth=0.60, relheight=0.12)
             self.entry_destino_arquivo.insert('1',
                                             'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo')
-
         else:
             try:
                 self.lb_destino_arquivo.destroy()
                 self.entry_destino_arquivo.destroy()
             except:
                 pass
+
+    def copiar_dados_lista(self):
+        try:
+            valores = list()
+            itens_selecionados = self.lista_observacoes.selection()
+            for i_item in range(0, len(itens_selecionados)):
+                valores.append(self.lista_observacoes.item(itens_selecionados[i_item], 'values'))
+            for cont in range(0, len(itens_selecionados)):
+                pass
+            copy(valores)
+        except:
+            messagebox.showinfo(title='ERRO', message='Selecione um elemento para ser obtido.')
 
 
 Janela_principal()

@@ -1,0 +1,222 @@
+{
+    "ERRO Geral": [
+        "Ocorreu um erro"
+    ],
+    "ERRO Compreensão": [
+        "Não entendi"
+    ], 
+    "ERRO Viabilidade": [
+        "Estou com problemas"
+    ],  
+    "ERRO Busca CEP": [
+        "Não encontrei nenhum endereço"
+    ], 
+    "ERRO Transbordo Precoce": [
+        "não consegui te entender"
+    ],
+    "Outro Endereço": [
+        "Gostaria de solicitar para outro endereço?",
+        "Transbordar para ATH"
+    ],
+    "Consultor Indisponível": [
+        "Os nossos consultores estão disponíveis das"
+    ],
+    "Finalização": [
+        "Estamos finalizando o seu atendimento"
+    ],
+    "Já sou Cliente": [
+        "Você já é nosso cliente?",
+        "Não"
+    ],
+    "Tipo Endereço": [
+        "Selecione o tipo do endereço",
+        "Casa"
+    ],
+    "Área Rural": [
+        "em uma área rural",
+        "Não"
+    ],
+    "Condominio": [
+        "localizado em um condomínio",
+        "Não"
+    ],
+    "CEP": [
+        "digite o seu CEP"
+    ],
+    "CEP_2": [
+        "digite seu CEP"
+    ],
+    "Número Ende.": [
+        "o número do endereço"
+    ],
+    "Complemento": [
+        "o complemento do endereço",
+        "não"
+    ],
+    "Prédio": [
+        "se encontra em um prédio",
+        "Não"
+    ],
+    "Bairro": [
+        "nome do bairro",
+        "NuloTeste"
+    ],
+    "Rua": [
+        "o nome da rua",
+        "NuloTeste"
+    ],
+    "Referência": [
+        "Informe um ponto de referência do endereço",
+        "Não"
+    ],
+    "Referência2": [
+        "Qual o ponto de referência do endereço",
+        "Não"
+    ],
+    "Metragem": [
+        "metragem do endereço",
+        "não"
+    ],
+    "Confirma endereço": [
+        "Está correto?",
+        "Sim"
+    ],
+    "Oferta Planos": [
+        "Escolha uma das opções abaixo que melhor te atende:",
+        1
+    ],
+    "Adicionar produtos": [
+        "adicionar mais produtos ao seu carrinho",
+        "Agora não"
+    ],
+    "TV": [
+        "adicionar TV",
+        "Não"
+    ],
+    "Tel Fixo": [
+        "Telefone Fixo ao seu carrinho",
+        "Não"
+    ],
+    "Tel Móvel": [
+        "Telefone Móvel ao seu carrinho",
+        "Não"
+    ],
+    "Nome": [
+        "seu nome completo",
+        "BOT de Teste de Fluxo"
+    ],
+    "CPF": [
+        "o seu CPF",
+        "96315157459"
+    ],
+    "RG": [
+        "número do seu RG",
+        "00000000"
+    ],
+    "Data Nascimento": [
+        "data de nascimento",
+        "01/01/2000"
+    ],
+    "Nome Mãe": [
+        "nome da sua mãe",
+        "Teste Nome Mãe"
+    ],
+    "Gênero": [
+        "me informe o seu gênero",
+        "Não binário"
+    ],
+    "Estado Civil": [
+        "estado civil",
+        "Solteiro"
+    ],
+    "Profissão": [
+        "sua profissão atual",
+        "BOT Analista de Fluxo"
+    ],
+    "Telefone Princ": [
+        "número preferível",
+        "31955555555"
+    ],
+    "Telefone Princ2": [
+        "seu melhor número",
+        "31955555555"
+    ],
+    "Telefone Princ3": [
+        "seu número de telefone",
+        "31955555555"
+    ],
+    "Telefone Adic": [
+        "número adicional",
+        "31966666666"
+    ],
+    "Envio Boleto": [
+        "como deseja receber seu boleto",
+        "E-mail"
+    ],
+    "E-mail": [
+        "seu e-mail",
+        "nulonulo@gmail.com"
+    ],
+    "Provedora": [
+        "alguma provedora de internet",
+        "Não"
+    ],
+    "Promoção": [
+        "outra operadora de internet",
+        "Não"
+    ],
+    "Pagamento": [
+        "pagamento por boleto digital ou por débito em conta",
+        "Boleto Digital"
+    ],
+    "Pagamento2": [
+        "Qual o melhor método de pagamento pra você?",
+        "Boleto Online"
+    ],
+    "Pagamento3": [
+        "prefere realizar o pagamento por",
+        "Boleto"
+    ],
+    "Data Vencimento": [
+        "datas de vencimento disponíveis"
+    ],
+    "Data Vencimento2": [
+        "melhor data de vencimento pra você"
+    ],
+    "Turno Inst.": [
+        "o turno ideal para a instalação",
+        "Manhã"
+    ],
+    "Confirma Pedido": [
+        "Preciso que você confirme as seguintes informações",
+        "Não Confirmo"
+    ],
+    "Confirma Pedido2": [
+        "Você confirma as informações acima?",
+        "Não Confirmo"
+    ],
+    "Confirma Pedido3": [
+        "Você está de acordo com a contratação",
+        "Não"
+    ],
+    "Data instalação": [
+        "a melhor data de instalação",
+        "1"
+    ],
+    "Motivo não confirmação": [
+        "Você não confirmou por qual motivo?",
+        "Falar com humano"
+    ],
+    "Transbordo_ATH": [
+        "um consultor especializado",
+        "Favor finalizar como teste. Tenha um ótimo trabalho!"
+    ],
+    "Transbordo_ATH 2": [
+        "Vou te transferir para",
+        "Favor finalizar como teste. Tenha um ótimo trabalho!"
+    ],
+    "Transbordo_ATH 3": [
+        "Temos consultores online",
+        "Favor finalizar como teste. Tenha um ótimo trabalho!"
+    ]
+}

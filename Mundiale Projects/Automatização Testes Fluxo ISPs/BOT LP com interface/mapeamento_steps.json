@@ -50,7 +50,11 @@
         "o número do endereço"
     ],
     "Complemento": [
-        "o complemento do endereço",
+        "complemento do endereço",
+        "não"
+    ],
+    "Complemento2": [
+        "complemento do seu endereço",
         "não"
     ],
     "Prédio": [
@@ -66,11 +70,7 @@
         "NuloTeste"
     ],
     "Referência": [
-        "Informe um ponto de referência do endereço",
-        "Não"
-    ],
-    "Referência2": [
-        "Qual o ponto de referência do endereço",
+        "ponto de referência do endereço",
         "Não"
     ],
     "Metragem": [

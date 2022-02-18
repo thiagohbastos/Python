@@ -16,7 +16,7 @@ from json import load
 class Funcoes:
     def iniciar_testes(self):
         # Coletando opções
-        self.resp = self.box_squad.get() if self.box_squad.get() != 'Todos os Squads' else 0
+        self.resp_squad = self.box_squad.get() if self.box_squad.get() != 'Todos os Squads' else 0
         self.salvar = self.box_salvar.get()
         self.sites = self.url_lps()
         self.resultado_etapas = []
@@ -24,7 +24,7 @@ class Funcoes:
         self.resultado_final = []
 
         # Desativando botões da interface
-        #self.box_salvar.configure(state='disable')
+        self.box_salvar.configure(state='disable')
         self.box_squad.configure(state='disable')
         self.bt_iniciar.destroy()
         try:
@@ -128,7 +128,7 @@ class Funcoes:
         else:
             return '1'
 
-    def interacao_chat(self, navegador, operacao, CEP='30000000', num='01', dt_vencimento='não sei'):
+    def interacao_chat(self, navegador, operacao, CEP='30000000', num='01', dt_vencimento='não sei', squad_atual='Null'):
         steps = self.mapeamento_steps(CEP, num, dt_vencimento)
         lista_aux_chat = []
         tempo_erro = apoio = 0
@@ -150,146 +150,78 @@ class Funcoes:
                 navegador.find_element(By.ID, 'msg-textarea').send_keys(steps[chave_step][1], Keys.ENTER)
             except:
                 pass
-            if chave_step.split()[0].upper() in 'ERRO':
-                navegador.save_screenshot(
-                    f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/prints/'
-                    f'{operacao} - {chave_step} ({date.today()}).png')
-                break
             n_bloco_atual = len(navegador.find_elements(By.XPATH, '//*[@id="messages-list"]/div[1]/div/div/div[2]/div'))
+            n_ultima_msg = len(navegador.find_elements(
+                By.XPATH, f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]/div[2]/div'))
+            if chave_step.split()[0].upper() in 'ERRO':
+                mensagem = str(navegador.find_element(
+                    By.XPATH, f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]'
+                              f'/div[2]/div[{n_ultima_msg - 1}]/div/div/div/div/div[1]/div[1]').text)
+                self.lista_observacoes.insert('', END, values=(squad_atual, operacao, chave_step, mensagem))
+                if self.salvar == 'Sim':
+                    pasta_arquivo = self.entry_destino_arquivo.get()
+                    navegador.save_screenshot(f'{pasta_arquivo}/{operacao} - {chave_step} ({date.today()}).png')
+                break
             if chave_step in 'Consultor Indisponível, Finalização' or chave_step.split()[0].upper() in 'TRANSBORDO_ATH':
                 break
             elif chave_step == '1' and n_bloco_atual % 2 == 0 and n_bloco_atual > 0 and tempo_erro >= 15:
                 chave_step = 'Chave não mapeada'
                 lista_aux_chat.append(chave_step)
-                navegador.save_screenshot(
-                    f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/prints/'
-                    f'{operacao} - {chave_step} ({date.today()}).png')
+                mensagem = str(navegador.find_element(
+                    By.XPATH, f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]'
+                              f'/div[2]/div[{n_ultima_msg - 1}]/div/div/div/div/div[1]/div[1]').text)
+                self.lista_observacoes.insert('', END, values=(squad_atual, operacao, chave_step, mensagem))
+                if self.salvar == 'Sim':
+                    pasta_arquivo = self.entry_destino_arquivo.get()
+                    navegador.save_screenshot(f'{pasta_arquivo}/{operacao} - {chave_step} ({date.today()}).png')
                 break
             elif n_bloco_atual > 0 and tempo_erro >= 15:
                 chave_step = f'ERROR TIMEOUT'
                 lista_aux_chat.append(chave_step)
-                navegador.save_screenshot(
-                    f'S:/Inovação/Planejamento/3 - MIS/Gerencial/Acompanhamento das ISPS - Semanal/Testes de Fluxo/prints/'
-                    f'{operacao} - {chave_step} ({date.today()}).png')
+                mensagem = str(navegador.find_element(
+                    By.XPATH, f'//*[@id="messages-list"]/div[1]/div/div/div[2]/div[{n_bloco_atual}]'
+                              f'/div[2]/div[{n_ultima_msg - 1}]/div/div/div/div/div[1]/div[1]').text)
+                self.lista_observacoes.insert('', END, values=(squad_atual, operacao, chave_step, mensagem))
+                if self.salvar == 'Sim':
+                    pasta_arquivo = self.entry_destino_arquivo.get()
+                    navegador.save_screenshot(f'{pasta_arquivo}/{operacao} - {chave_step} ({date.today()}).png')
                 break
             apoio = chave_step
         return lista_aux_chat[:]
 
-    def salvar_arquivo(self):
-        #try:
-        if self.salvar == 'Sim':
-            hora = int(str(datetime.time(datetime.today()))[:2])
-            if 12 > hora >= 6:
-                turno = 'Manhã'
-            elif 18 > hora >= 12:
-                turno = 'Tarde'
-            else:
-                turno = 'Noite'
-            pasta_arquivo = self.entry_destino_arquivo.get()
-            pasta_arquivo = f'{pasta_arquivo}/Testes de Fluxo {self.resp if self.resp != 0 else ""}' \
-                            f' {date.today().day}-{date.today().month} ({turno}).xlsx'
-            arquivo = ExcelWriter(pasta_arquivo, engine='xlsxwriter')
-            if self.resp == 0:
-                for i, resultado in enumerate(self.resultado_final):
-                    self.resultado_final[i].to_excel(arquivo, sheet_name=i, index=False)
-            else:
-                self.resultado_final[0].to_excel(arquivo, sheet_name=self.resp, index=False)
-            arquivo.save()
-        self.resultado_final.clear()
-        r"""except Exception as erro:
-            messagebox.showerror(title='Erro no Salvamento', message=f'Houve erro ao salvar os testes!\n\n'
-                                                                f'Erro: {erro.__class__}\n\n'
-                                                                f'Descrição: {erro.__context__}\n'
-                                                                f'{erro.__str__()}')"""
-
     def fluxo_completo(self):
-        try:
-            self.navegador = Chrome()
-            lista_auxiliar = []
-            if self.resp == 0:
-                for k, squad in self.sites.items():
-                    for k2, lp in squad.items():
-                        self.resultado_geral[k2] = []
-                        try:
-                            if self.sites[k][k2][0] == 'https://ofertasblinktelecom.com.br/':
-                                self.navegador.get(lp[0])
-                            else:
-                                self.navegador.switch_to.new_window('tab')
-                                self.navegador.get(lp[0])
-                        except:
-                            self.resultado_geral[k2] = ['LP Fora do Ar']
-                            continue
-                        else:
-                            c = self.sites[k][k2][1]
-                            n = self.sites[k][k2][2]
-                            venci = 'Não sei'
-                            try:
-                                venci = self.sites[k][k2][3]
-                            except:
-                                pass
-                            self.resultado_etapas.append('LP OK')
-                            self.resultado_etapas.append(self.tratar_cidade(self.navegador))
-                            self.resultado_etapas.append(self.abrir_snippet(self.navegador))
-                            try:
-                                self.navegador.switch_to.frame(self.navegador.find_element(By.ID, 'blip-chat-iframe'))
-                                WebDriverWait(self.navegador, 30).until(
-                                    expected_conditions.presence_of_element_located(
-                                        (By.XPATH,
-                                         '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div/div[1]/div')))
-                            except:
-                                self.resultado_etapas.append('CHAT TIMEOUT')
-                                for cont in range(0, len(lista_auxiliar)):
-                                    self.resultado_etapas.append(lista_auxiliar[cont])
-                                continue
-                            else:
-                                self.resultado_etapas.append('CHAT OK')
-
-                            lista_auxiliar = self.interacao_chat(self.navegador, k2, c, n, venci)
-                            for cont in range(0, len(lista_auxiliar)):
-                                self.resultado_etapas.append(lista_auxiliar[cont])
-
-                            self.resultado_geral[k2] = self.resultado_etapas[:]
-                            self.resultado_etapas.clear()
-                            lista_auxiliar.clear()
-
-                    tamanho_maximo_etapas = 0
-                    for operacao in self.resultado_geral.values():
-                        if len(operacao) > tamanho_maximo_etapas:
-                            tamanho_maximo_etapas = len(operacao)
-
-                    for operacao in self.resultado_geral.values():
-                        if len(operacao) < tamanho_maximo_etapas:
-                            dif = tamanho_maximo_etapas - len(operacao)
-                            for cont in range(0, dif):
-                                operacao.append('-')
-
-                    vars()[f'df_{k}'] = DataFrame(data=self.resultado_geral)
-                    self.resultado_geral.clear()
-                    self.resultado_final.append(vars()[f'df_{k}'])
-
-            else:
-                for k2, lp in self.sites[self.resp].items():
+        #try:
+        self.navegador = Chrome()
+        lista_auxiliar = []
+        if self.resp_squad == 0:
+            nome_squad_1 = list(self.sites)[0]
+            nome_lp_1 = list(self.sites[nome_squad_1])[0]
+            primeira_url = self.sites[nome_squad_1][nome_lp_1][0]
+            for k, squad in self.sites.items():
+                for k2, lp in squad.items():
                     self.resultado_geral[k2] = []
                     try:
-                        if k2 in 'BLINK TVN MOB VALENET':
+                        if self.sites[k][k2][0] == primeira_url:
                             self.navegador.get(lp[0])
                         else:
                             self.navegador.switch_to.new_window('tab')
                             self.navegador.get(lp[0])
                     except:
                         self.resultado_geral[k2] = ['LP Fora do Ar']
+                        self.lista_observacoes.insert('', END, values=(k, k2,
+                                                                       'LP Fora do Ar', 'LP Fora do Ar'))
+                        continue
                     else:
-                        c = self.sites[self.resp][k2][1]
-                        n = self.sites[self.resp][k2][2]
+                        c = self.sites[k][k2][1]
+                        n = self.sites[k][k2][2]
                         venci = 'Não sei'
                         try:
-                            venci = self.sites[self.resp][k2][3]
+                            venci = self.sites[k][k2][3]
                         except:
                             pass
                         self.resultado_etapas.append('LP OK')
                         self.resultado_etapas.append(self.tratar_cidade(self.navegador))
                         self.resultado_etapas.append(self.abrir_snippet(self.navegador))
-
                         try:
                             self.navegador.switch_to.frame(self.navegador.find_element(By.ID, 'blip-chat-iframe'))
                             WebDriverWait(self.navegador, 30).until(
@@ -298,11 +230,17 @@ class Funcoes:
                                      '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div/div[1]/div')))
                         except:
                             self.resultado_etapas.append('CHAT TIMEOUT')
+                            for cont in range(0, len(lista_auxiliar)):
+                                self.resultado_geral[k2].append(self.resultado_etapas[cont])
+                            if self.resultado_etapas[-1] == 'Snippet Não OK':
+                                self.lista_observacoes.insert('', END, values=(k, k2,
+                                                                               'Snippet Não OK', 'CHAT TIMEOUT'))
+                            self.resultado_etapas.clear()
                             continue
                         else:
                             self.resultado_etapas.append('CHAT OK')
 
-                        lista_auxiliar = self.interacao_chat(self.navegador, k2, c, n, venci)
+                        lista_auxiliar = self.interacao_chat(self.navegador, k2, c, n, venci, k)
                         for cont in range(0, len(lista_auxiliar)):
                             self.resultado_etapas.append(lista_auxiliar[cont])
 
@@ -321,23 +259,127 @@ class Funcoes:
                         for cont in range(0, dif):
                             operacao.append('-')
 
-                vars()[f'df_{self.resp}'] = DataFrame(data=self.resultado_geral)
+                vars()[f'df_{k}'] = DataFrame(data=self.resultado_geral)
                 self.resultado_geral.clear()
-                self.resultado_final.append(vars()[f'df_{self.resp}'])
-        except Exception as erro:
+                self.resultado_final.append(vars()[f'df_{k}'])
+
+        else:
+            nome_lp_1 = list(self.sites[self.resp_squad])[0]
+            primeira_url = self.sites[self.resp_squad][nome_lp_1][0]
+            for k2, lp in self.sites[self.resp_squad].items():
+                self.resultado_geral[k2] = []
+                try:
+                    if lp[0] == primeira_url:
+                        self.navegador.get(lp[0])
+                    else:
+                        self.navegador.switch_to.new_window('tab')
+                        self.navegador.get(lp[0])
+                except:
+                    self.resultado_geral[k2] = ['LP Fora do Ar']
+                    self.lista_observacoes.insert('', END, values=(self.resp_squad, k2,
+                                                                   'LP Fora do Ar', 'LP Fora do Ar'))
+                else:
+                    c = self.sites[self.resp_squad][k2][1]
+                    n = self.sites[self.resp_squad][k2][2]
+                    venci = 'Não sei'
+                    try:
+                        venci = self.sites[self.resp_squad][k2][3]
+                    except:
+                        pass
+                    self.resultado_etapas.append('LP OK')
+                    self.resultado_etapas.append(self.tratar_cidade(self.navegador))
+                    self.resultado_etapas.append(self.abrir_snippet(self.navegador))
+                    try:
+                        self.navegador.switch_to.frame(self.navegador.find_element(By.ID, 'blip-chat-iframe'))
+                        WebDriverWait(self.navegador, 30).until(
+                            expected_conditions.presence_of_element_located(
+                                (By.XPATH,
+                                 '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div/div[1]/div')))
+                    except:
+                        self.resultado_etapas.append('CHAT TIMEOUT')
+                        for cont in range(0, len(lista_auxiliar)):
+                            self.resultado_geral[k2].append(self.resultado_etapas[cont])
+                        if self.resultado_etapas[-1] == 'Snippet Não OK':
+                            self.lista_observacoes.insert('', END, values=(self.resp_squad, k2,
+                                                                           'Snippet Não OK', 'CHAT TIMEOUT'))
+                        self.resultado_etapas.clear()
+                        continue
+                    else:
+                        self.resultado_etapas.append('CHAT OK')
+
+                    lista_auxiliar = self.interacao_chat(self.navegador, k2, c, n, venci, self.resp_squad)
+                    for cont in range(0, len(lista_auxiliar)):
+                        self.resultado_etapas.append(lista_auxiliar[cont])
+
+                    self.resultado_geral[k2] = self.resultado_etapas[:]
+                    self.resultado_etapas.clear()
+                    lista_auxiliar.clear()
+
+            tamanho_maximo_etapas = 0
+            for operacao in self.resultado_geral.values():
+                if len(operacao) > tamanho_maximo_etapas:
+                    tamanho_maximo_etapas = len(operacao)
+
+            for operacao in self.resultado_geral.values():
+                if len(operacao) < tamanho_maximo_etapas:
+                    dif = tamanho_maximo_etapas - len(operacao)
+                    for cont in range(0, dif):
+                        operacao.append('-')
+
+            vars()[f'df_{self.resp_squad}'] = DataFrame(data=self.resultado_geral)
+            self.resultado_geral.clear()
+            self.resultado_final.append(vars()[f'df_{self.resp_squad}'])
+
+        r"""except Exception as erro:
             messagebox.showerror(title='Erro no fluxo', message=f'Houve erro no fluxo do chat!\n\n'
                                                                 f'Erro: {erro.__class__}\n\n'
                                                                 f'Descrição: {erro.__context__}\n'
-                                                                f'{erro.__str__()}')
+                                                                f'{erro.__str__()}')"""
+
+    def salvar_arquivo(self):
+        #try:
+        if self.salvar == 'Sim':
+            hora = int(str(datetime.time(datetime.today()))[:2])
+            if 12 > hora >= 6:
+                turno = 'Manhã'
+            elif 18 > hora >= 12:
+                turno = 'Tarde'
+            else:
+                turno = 'Noite'
+            pasta_arquivo = self.entry_destino_arquivo.get() + '/'
+            pasta_arquivo = f'{pasta_arquivo}/Testes de Fluxo {self.resp_squad if self.resp_squad != 0 else ""}' \
+                            f' {date.today().day}-{date.today().month} ({turno}).xlsx'
+            arquivo = ExcelWriter(pasta_arquivo, engine='xlsxwriter')
+            if self.resp_squad == 0:
+                for i, resultado in enumerate(self.resultado_final):
+                    nome = list(self.sites)[i]
+                    self.resultado_final[i].to_excel(arquivo, sheet_name=nome, index=False)
+            else:
+                self.resultado_final[0].to_excel(arquivo, sheet_name=self.resp_squad, index=False)
+            arquivo.save()
+        self.resultado_final.clear()
+        r"""except Exception as erro:
+            messagebox.showerror(title='Erro no Salvamento', message=f'Houve erro ao salvar os testes!\n\n'
+                                                                f'Erro: {erro.__class__}\n\n'
+                                                                f'Descrição: {erro.__context__}\n'
+                                                                f'{erro.__str__()}')"""
+
 
 class Janela_principal(Funcoes):
     def __init__(self):
         # Atributos
+
+        #Estilo
         self.estilo_1 = Style(theme='cosmo')
-        # ttk.Style().configure('TEntry')
         self.estilo_1.configure('TButton', font='sans-serif 11')
         self.estilo_1.configure('Treeview', foreground='#3D3D3D', rowheight=25)
         self.estilo_1.map('Treeview', background=[('selected', 'green')])
+        #Opções comboBox squad
+        self.squads = ['Todos os Squads']
+        aux = list(Funcoes.url_lps(self))
+        num_squads = len(aux)
+        for x in range(0, num_squads):
+            self.squads.append(aux[x])
         # Define tema e cria o objeto janela
         self.root = self.estilo_1.master
         # Funções
@@ -391,10 +433,10 @@ class Janela_principal(Funcoes):
         self.lista_observacoes.column('#1', width=80, anchor=W)
         self.lista_observacoes.column('#2', width=80, anchor=W)
         self.lista_observacoes.column('#3', width=100, anchor=W)
-        self.lista_observacoes.column('#3', width=200, anchor=W)
-        for x in range(1, 8):
-            self.lista_observacoes.insert('', END, values=('EVA', 'LIGUE', 'ERROR TIMEOUT', 'TESTE TESTE TESTE TESTE TESTE TESTE'))
-            self.lista_observacoes.insert('', END, values=('WALL-E', 'TESTE', 'ERROR TIMEOUT', 'TESTE TESTE TESTE TESTE TESTE TESTE'))
+        self.lista_observacoes.column('#4', width=240, anchor=W)
+        #for x in range(1, 8):
+        #    self.lista_observacoes.insert('', END, values=('EVA', 'LIGUE', 'ERROR TIMEOUT', 'TESTE TESTE TESTE TESTE TESTE TESTE'))
+        #    self.lista_observacoes.insert('', END, values=('WALL-E', 'TESTE', 'ERROR TIMEOUT', 'TESTE TESTE TESTE TESTE TESTE TESTE'))
 
     def titulo(self):
         self.titulo_lb = ttk.Label(self.frame_um, text='BOT de Teste de Fluxo LP', font=('sans-serif', '18', 'bold'),
@@ -407,7 +449,7 @@ class Janela_principal(Funcoes):
         self.lb_squad.place(relx=0.02, rely=0.265)
         # Combobox
         self.box_squad = ttk.Combobox(
-            self.frame_um, values=['Todos os Squads', 'EVA', 'WALL-E', 'BURN-E', 'M-O'], font=('sans-serif', '13'),
+            self.frame_um, values=self.squads, font=('sans-serif', '13'),
             foreground='black', state='readonly', takefocus=False
         )
         self.box_squad.current(0)

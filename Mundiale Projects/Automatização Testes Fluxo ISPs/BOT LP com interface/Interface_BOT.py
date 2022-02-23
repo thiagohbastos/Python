@@ -32,7 +32,7 @@ class Funcoes:
         except:
             pass
         # Meios técnicos para recriar o botão
-        self.bt_iniciar = ttk.Button(self.frame_um, text='Testes Finalizados!', width=20, style=SUCCESS)
+        self.bt_iniciar = ttk.Button(self.frame_um, text='Testes Finalizados!', width=50, style=SUCCESS)
         self.bt_iniciar.pack(pady=(164, 0))
 
         # Alterando e inserindo elementos
@@ -44,6 +44,9 @@ class Funcoes:
         #Iniciando o fluxo
         self.fluxo_completo()
         self.salvar_arquivo()
+        self.bt_copiar = ttk.Button(self.frame_dois, text='Copiar Mensagem Selecionada', width=46, style=OUTLINE,
+                                    command=self.copiar_dados_lista)
+        self.bt_copiar.place(relx=0.01, rely=0.745, relheight=0.14)
 
     def tratar_cidade(self, navegador):
         try:
@@ -190,33 +193,100 @@ class Funcoes:
         return lista_aux_chat[:]
 
     def fluxo_completo(self):
-        #try:
-        self.navegador = Chrome()
-        lista_auxiliar = []
-        if self.resp_squad == 0:
-            nome_squad_1 = list(self.sites)[0]
-            nome_lp_1 = list(self.sites[nome_squad_1])[0]
-            primeira_url = self.sites[nome_squad_1][nome_lp_1][0]
-            for k, squad in self.sites.items():
-                for k2, lp in squad.items():
+        try:
+            self.navegador = Chrome()
+            lista_auxiliar = []
+            if self.resp_squad == 0:
+                nome_squad_1 = list(self.sites)[0]
+                nome_lp_1 = list(self.sites[nome_squad_1])[0]
+                primeira_url = self.sites[nome_squad_1][nome_lp_1][0]
+                for k, squad in self.sites.items():
+                    for k2, lp in squad.items():
+                        self.resultado_geral[k2] = []
+                        try:
+                            if self.sites[k][k2][0] == primeira_url:
+                                self.navegador.get(lp[0])
+                            else:
+                                self.navegador.switch_to.new_window('tab')
+                                self.navegador.get(lp[0])
+                        except:
+                            self.resultado_geral[k2] = ['LP Fora do Ar']
+                            self.lista_observacoes.insert('', END, values=(k, k2,
+                                                                           'LP Fora do Ar', 'LP Fora do Ar'))
+                            continue
+                        else:
+                            c = self.sites[k][k2][1]
+                            n = self.sites[k][k2][2]
+                            venci = 'Não sei'
+                            try:
+                                venci = self.sites[k][k2][3]
+                            except:
+                                pass
+                            self.resultado_etapas.append('LP OK')
+                            self.resultado_etapas.append(self.tratar_cidade(self.navegador))
+                            self.resultado_etapas.append(self.abrir_snippet(self.navegador))
+                            try:
+                                self.navegador.switch_to.frame(self.navegador.find_element(By.ID, 'blip-chat-iframe'))
+                                WebDriverWait(self.navegador, 30).until(
+                                    expected_conditions.presence_of_element_located(
+                                        (By.XPATH,
+                                         '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div/div[1]/div')))
+                            except:
+                                self.resultado_etapas.append('CHAT TIMEOUT')
+                                for cont in range(0, len(lista_auxiliar)):
+                                    self.resultado_geral[k2].append(self.resultado_etapas[cont])
+                                if self.resultado_etapas[-1] == 'Snippet Não OK':
+                                    self.lista_observacoes.insert('', END, values=(k, k2,
+                                                                                   'Snippet Não OK', 'CHAT TIMEOUT'))
+                                self.resultado_etapas.clear()
+                                continue
+                            else:
+                                self.resultado_etapas.append('CHAT OK')
+
+                            lista_auxiliar = self.interacao_chat(self.navegador, k2, c, n, venci, k)
+                            for cont in range(0, len(lista_auxiliar)):
+                                self.resultado_etapas.append(lista_auxiliar[cont])
+
+                            self.resultado_geral[k2] = self.resultado_etapas[:]
+                            self.resultado_etapas.clear()
+                            lista_auxiliar.clear()
+
+                    tamanho_maximo_etapas = 0
+                    for operacao in self.resultado_geral.values():
+                        if len(operacao) > tamanho_maximo_etapas:
+                            tamanho_maximo_etapas = len(operacao)
+
+                    for operacao in self.resultado_geral.values():
+                        if len(operacao) < tamanho_maximo_etapas:
+                            dif = tamanho_maximo_etapas - len(operacao)
+                            for cont in range(0, dif):
+                                operacao.append('-')
+
+                    vars()[f'df_{k}'] = DataFrame(data=self.resultado_geral)
+                    self.resultado_geral.clear()
+                    self.resultado_final.append(vars()[f'df_{k}'])
+
+            else:
+                nome_lp_1 = list(self.sites[self.resp_squad])[0]
+                primeira_url = self.sites[self.resp_squad][nome_lp_1][0]
+                for k2, lp in self.sites[self.resp_squad].items():
                     self.resultado_geral[k2] = []
                     try:
-                        if self.sites[k][k2][0] == primeira_url:
+                        if lp[0] == primeira_url:
                             self.navegador.get(lp[0])
                         else:
                             self.navegador.switch_to.new_window('tab')
                             self.navegador.get(lp[0])
                     except:
                         self.resultado_geral[k2] = ['LP Fora do Ar']
-                        self.lista_observacoes.insert('', END, values=(k, k2,
+                        self.lista_observacoes.insert('', END, values=(self.resp_squad, k2,
                                                                        'LP Fora do Ar', 'LP Fora do Ar'))
-                        continue
                     else:
-                        c = self.sites[k][k2][1]
-                        n = self.sites[k][k2][2]
+                        c = self.sites[self.resp_squad][k2][1]
+                        n = self.sites[self.resp_squad][k2][2]
                         venci = 'Não sei'
                         try:
-                            venci = self.sites[k][k2][3]
+                            venci = self.sites[self.resp_squad][k2][3]
                         except:
                             pass
                         self.resultado_etapas.append('LP OK')
@@ -233,14 +303,14 @@ class Funcoes:
                             for cont in range(0, len(lista_auxiliar)):
                                 self.resultado_geral[k2].append(self.resultado_etapas[cont])
                             if self.resultado_etapas[-1] == 'Snippet Não OK':
-                                self.lista_observacoes.insert('', END, values=(k, k2,
+                                self.lista_observacoes.insert('', END, values=(self.resp_squad, k2,
                                                                                'Snippet Não OK', 'CHAT TIMEOUT'))
                             self.resultado_etapas.clear()
                             continue
                         else:
                             self.resultado_etapas.append('CHAT OK')
 
-                        lista_auxiliar = self.interacao_chat(self.navegador, k2, c, n, venci, k)
+                        lista_auxiliar = self.interacao_chat(self.navegador, k2, c, n, venci, self.resp_squad)
                         for cont in range(0, len(lista_auxiliar)):
                             self.resultado_etapas.append(lista_auxiliar[cont])
 
@@ -259,116 +329,61 @@ class Funcoes:
                         for cont in range(0, dif):
                             operacao.append('-')
 
-                vars()[f'df_{k}'] = DataFrame(data=self.resultado_geral)
+                vars()[f'df_{self.resp_squad}'] = DataFrame(data=self.resultado_geral)
                 self.resultado_geral.clear()
-                self.resultado_final.append(vars()[f'df_{k}'])
-
-        else:
-            nome_lp_1 = list(self.sites[self.resp_squad])[0]
-            primeira_url = self.sites[self.resp_squad][nome_lp_1][0]
-            for k2, lp in self.sites[self.resp_squad].items():
-                self.resultado_geral[k2] = []
-                try:
-                    if lp[0] == primeira_url:
-                        self.navegador.get(lp[0])
-                    else:
-                        self.navegador.switch_to.new_window('tab')
-                        self.navegador.get(lp[0])
-                except:
-                    self.resultado_geral[k2] = ['LP Fora do Ar']
-                    self.lista_observacoes.insert('', END, values=(self.resp_squad, k2,
-                                                                   'LP Fora do Ar', 'LP Fora do Ar'))
-                else:
-                    c = self.sites[self.resp_squad][k2][1]
-                    n = self.sites[self.resp_squad][k2][2]
-                    venci = 'Não sei'
-                    try:
-                        venci = self.sites[self.resp_squad][k2][3]
-                    except:
-                        pass
-                    self.resultado_etapas.append('LP OK')
-                    self.resultado_etapas.append(self.tratar_cidade(self.navegador))
-                    self.resultado_etapas.append(self.abrir_snippet(self.navegador))
-                    try:
-                        self.navegador.switch_to.frame(self.navegador.find_element(By.ID, 'blip-chat-iframe'))
-                        WebDriverWait(self.navegador, 30).until(
-                            expected_conditions.presence_of_element_located(
-                                (By.XPATH,
-                                 '//*[@id="messages-list"]/div[1]/div/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div/div[1]/div')))
-                    except:
-                        self.resultado_etapas.append('CHAT TIMEOUT')
-                        for cont in range(0, len(lista_auxiliar)):
-                            self.resultado_geral[k2].append(self.resultado_etapas[cont])
-                        if self.resultado_etapas[-1] == 'Snippet Não OK':
-                            self.lista_observacoes.insert('', END, values=(self.resp_squad, k2,
-                                                                           'Snippet Não OK', 'CHAT TIMEOUT'))
-                        self.resultado_etapas.clear()
-                        continue
-                    else:
-                        self.resultado_etapas.append('CHAT OK')
-
-                    lista_auxiliar = self.interacao_chat(self.navegador, k2, c, n, venci, self.resp_squad)
-                    for cont in range(0, len(lista_auxiliar)):
-                        self.resultado_etapas.append(lista_auxiliar[cont])
-
-                    self.resultado_geral[k2] = self.resultado_etapas[:]
-                    self.resultado_etapas.clear()
-                    lista_auxiliar.clear()
-
-            tamanho_maximo_etapas = 0
-            for operacao in self.resultado_geral.values():
-                if len(operacao) > tamanho_maximo_etapas:
-                    tamanho_maximo_etapas = len(operacao)
-
-            for operacao in self.resultado_geral.values():
-                if len(operacao) < tamanho_maximo_etapas:
-                    dif = tamanho_maximo_etapas - len(operacao)
-                    for cont in range(0, dif):
-                        operacao.append('-')
-
-            vars()[f'df_{self.resp_squad}'] = DataFrame(data=self.resultado_geral)
-            self.resultado_geral.clear()
-            self.resultado_final.append(vars()[f'df_{self.resp_squad}'])
-
-        r"""except Exception as erro:
+                self.resultado_final.append(vars()[f'df_{self.resp_squad}'])
+            messagebox.showinfo(title='Status Testes', message='Testes finalizados com êxito!')
+        except Exception as erro:
             messagebox.showerror(title='Erro no fluxo', message=f'Houve erro no fluxo do chat!\n\n'
                                                                 f'Erro: {erro.__class__}\n\n'
                                                                 f'Descrição: {erro.__context__}\n'
-                                                                f'{erro.__str__()}')"""
+                                                                f'{erro.__str__()}')
 
     def salvar_arquivo(self):
-        #try:
-        if self.salvar == 'Sim':
-            hora = int(str(datetime.time(datetime.today()))[:2])
-            if 12 > hora >= 6:
-                turno = 'Manhã'
-            elif 18 > hora >= 12:
-                turno = 'Tarde'
-            else:
-                turno = 'Noite'
-            pasta_arquivo = self.entry_destino_arquivo.get() + '/'
-            pasta_arquivo = f'{pasta_arquivo}/Testes de Fluxo {self.resp_squad if self.resp_squad != 0 else ""}' \
-                            f' {date.today().day}-{date.today().month} ({turno}).xlsx'
-            arquivo = ExcelWriter(pasta_arquivo, engine='xlsxwriter')
-            if self.resp_squad == 0:
-                for i, resultado in enumerate(self.resultado_final):
-                    nome = list(self.sites)[i]
-                    self.resultado_final[i].to_excel(arquivo, sheet_name=nome, index=False)
-            else:
-                self.resultado_final[0].to_excel(arquivo, sheet_name=self.resp_squad, index=False)
-            arquivo.save()
-        self.resultado_final.clear()
-        r"""except Exception as erro:
+        try:
+            if self.salvar == 'Sim':
+                hora = int(str(datetime.time(datetime.today()))[:2])
+                if 12 > hora >= 6:
+                    turno = 'Manhã'
+                elif 18 > hora >= 12:
+                    turno = 'Tarde'
+                else:
+                    turno = 'Noite'
+                pasta_arquivo = self.entry_destino_arquivo.get() + '/'
+                pasta_arquivo = f'{pasta_arquivo}/Testes de Fluxo {self.resp_squad if self.resp_squad != 0 else ""}' \
+                                f' {date.today().day}-{date.today().month} ({turno}).xlsx'
+                arquivo = ExcelWriter(pasta_arquivo, engine='xlsxwriter')
+                if self.resp_squad == 0:
+                    for i, resultado in enumerate(self.resultado_final):
+                        nome = list(self.sites)[i]
+                        self.resultado_final[i].to_excel(arquivo, sheet_name=nome, index=False)
+                else:
+                    self.resultado_final[0].to_excel(arquivo, sheet_name=self.resp_squad, index=False)
+                arquivo.save()
+            self.resultado_final.clear()
+        except Exception as erro:
             messagebox.showerror(title='Erro no Salvamento', message=f'Houve erro ao salvar os testes!\n\n'
                                                                 f'Erro: {erro.__class__}\n\n'
                                                                 f'Descrição: {erro.__context__}\n'
-                                                                f'{erro.__str__()}')"""
+                                                                f'{erro.__str__()}')
+
+    def copiar_dados_lista(self, evento=None):
+        valores = list()
+        itens_selecionados = self.lista_observacoes.selection()
+        if len(itens_selecionados) >=1:
+            for i_item in range(0, len(itens_selecionados)):
+                valores.append(self.lista_observacoes.item(itens_selecionados[i_item], 'values'))
+            valores = str(valores)
+            copy(valores)
+            messagebox.showinfo(title='Valor Copiado',
+                                message='Os itens selecionados foram copiados \npara a área de transferência com êxito!')
+        else:
+            messagebox.showwarning(title='Seleção inválida', message='Selecione um elemento para ser copiado.')
 
 
 class Janela_principal(Funcoes):
     def __init__(self):
         # Atributos
-
         #Estilo
         self.estilo_1 = Style(theme='cosmo')
         self.estilo_1.configure('TButton', font='sans-serif 11')
@@ -419,12 +434,11 @@ class Janela_principal(Funcoes):
                                               show='headings',
                                               yscrollcommand=self.scroll_vertical.set,
                                               xscrollcommand=self.scroll_horizontal.set)
-        self.lista_observacoes.place(relx=0.01, rely=0.01, relwidth=0.9, relheight=0.88)
+        self.lista_observacoes.place(relx=0.01, rely=0.01, relwidth=0.9, relheight=0.73)
         # Linkando a barra de rolagem e a lista
         self.scroll_vertical.config(command=self.lista_observacoes.yview)
         self.scroll_horizontal.config(command=self.lista_observacoes.xview)
         #Cabeçalho das colunas
-        #self.lista_generica.heading('#0', text='')
         self.lista_observacoes.heading('#1', text='Squad', anchor=W)
         self.lista_observacoes.heading('#2', text='Operação', anchor=W)
         self.lista_observacoes.heading('#3', text='Observação', anchor=W)
@@ -434,9 +448,6 @@ class Janela_principal(Funcoes):
         self.lista_observacoes.column('#2', width=80, anchor=W)
         self.lista_observacoes.column('#3', width=100, anchor=W)
         self.lista_observacoes.column('#4', width=240, anchor=W)
-        #for x in range(1, 8):
-        #    self.lista_observacoes.insert('', END, values=('EVA', 'LIGUE', 'ERROR TIMEOUT', 'TESTE TESTE TESTE TESTE TESTE TESTE'))
-        #    self.lista_observacoes.insert('', END, values=('WALL-E', 'TESTE', 'ERROR TIMEOUT', 'TESTE TESTE TESTE TESTE TESTE TESTE'))
 
     def titulo(self):
         self.titulo_lb = ttk.Label(self.frame_um, text='BOT de Teste de Fluxo LP', font=('sans-serif', '18', 'bold'),
@@ -469,7 +480,7 @@ class Janela_principal(Funcoes):
         self.box_salvar.bind('<<ComboboxSelected>>', self.reacao_box_salvar)
 
     def botoes(self):
-        self.bt_iniciar = ttk.Button(self.frame_um, text='Iniciar Testes', width=20, command=self.iniciar_testes)
+        self.bt_iniciar = ttk.Button(self.frame_um, text='Iniciar Testes', width=50, command=self.iniciar_testes)
         self.bt_iniciar.pack(pady=(162, 0))
 
     def reacao_box_salvar(self, evento=None):
@@ -488,18 +499,6 @@ class Janela_principal(Funcoes):
                 self.entry_destino_arquivo.destroy()
             except:
                 pass
-
-    def copiar_dados_lista(self):
-        try:
-            valores = list()
-            itens_selecionados = self.lista_observacoes.selection()
-            for i_item in range(0, len(itens_selecionados)):
-                valores.append(self.lista_observacoes.item(itens_selecionados[i_item], 'values'))
-            for cont in range(0, len(itens_selecionados)):
-                pass
-            copy(valores)
-        except:
-            messagebox.showinfo(title='ERRO', message='Selecione um elemento para ser obtido.')
 
 
 Janela_principal()
